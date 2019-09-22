@@ -7,7 +7,8 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 ## Week 1
 > **Sunday, Sep 22nd, 2019**
 
-Complete Section 1 - Introduction.
+- [X] Complete Section 1 - Introduction.
+  > This week covered basic vocabulary and concepts related to AI and ML.
 
 - 1-1 Course Overview
   - [X] Understand the nature of the course
