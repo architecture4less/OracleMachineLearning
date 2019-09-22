@@ -1,4 +1,5 @@
 
+
 # OracleMachineLearning
 
 This is my personal project submission for professor Vanselow's _COP3003: Object Oriented Programming_ class at Florida Gulf Coast University for the 2019 fall semester. I will be completing the [Artificial Intelligence with Machine Learning in Java](https://academy.oracle.com/en/solutions-curriculum-full.html#machinelearn) Oracle iLearning course.
@@ -9,26 +10,37 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 Complete Section 1 - Introduction.
 
 - 1-1 Course Overview
-  - [ ] Understand the nature of the course
-  - [ ] Understand the delivery mechanism
-  
+  - [X] Understand the nature of the course
+  - [X] Understand the delivery mechanism
+
 - 1-2 Introduction to AI
-  - [ ] Define artificial intelligence
-  - [ ] Define machine learning
-  - [ ] Give examples of using artificial intelligence
-  - [ ] Define data exhaust
+  - [X] Define artificial intelligence
+    > AI is the ability for a machine to exhibit human-like intelligence. This can be evaluated through a Turing test. The appearance of intelligence can be due to the performance of an algorithm with immense processing power rather than the mimicking of human behavior.
+  - [X] Define machine learning
+    > The Stanford University definition of Machine Learning is "The science of getting computers to act without being explicitly programmed". ML is a potential approach to building an AI. ML algorithms are focused on making predictions on data sets.
+  - [x] Give examples of using artificial intelligence
+    > AI and ML are used today in facial recognition, speech recognition, image categorization, targeted advertising, content suggestion, etc.
+  - [x] Define data exhaust
+    > Data exhaust refers to the data that we create as we go about our day, which can potentially be collected.
   
 - 1-3 Data and Information
-  - [ ] Define data
-  - [ ] Define information
-  - [ ] Differentiate between data and information
+  - [X] Define data
+    > Data are the raw, unprocessed facts about the world.
+  - [X] Define information
+    > Information is the useful and contextualized presentation of data.  
+  - [X] Differentiate between data and information
   
 - 1-4 Categorizing Data
-  - [ ] Define supervised learning
-  - [ ] Define unsupervised learning
-  - [ ] Define classification
-  - [ ] Define regression
-  - [ ] Define structured and unstructured data
+  - [X] Define supervised learning
+    > A labeled set of inputs (independent data) and expected outputs (dependent data) are given to the computer to learn from. 
+  - [X] Define unsupervised learning
+    > The set of training data is unstructured, meaning it has not been labelled and the relationships of the data are not known. This can be the result of extremely large data sets.
+  - [x] Define classification
+    > Input data is defined in terms of discrete values or 'class labels'.
+  - [x] Define regression
+    > Input data is defined over a continuous range, using real numbers.
+  - [x] Define structured and unstructured data
+    > Structured data is highly organized and tabular, with little complexity. Examples are numbers, dates, and names. Unstructured data can be complex, including things such as emails, objects in a photograph, etc.
 
 ## Curriculum
 
