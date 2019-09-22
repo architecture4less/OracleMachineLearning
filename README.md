@@ -43,6 +43,19 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   - [x] Define structured and unstructured data
     > Structured data is highly organized and tabular, with little complexity. Examples are numbers, dates, and names. Unstructured data can be complex, including things such as emails, objects in a photograph, etc.
 
+## Week 2
+> **Sunday, Sep 29th, 2019**
+
+- [ ] Complete Section 2 – Machine Learning
+
+- 2-1 Why Now?
+  - [ ] State the reasons behind the growth in AI
+  - [ ] Understand the growth in processing power
+
+- 2-2 Machine Learning Workflow
+  - [ ] Understand the use of models within machine learning
+  - [ ] Understand the CRISP-DM Model
+
 ## Curriculum
 
 - Section 1 - Introduction
