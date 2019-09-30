@@ -4,7 +4,16 @@
 
 This is my personal project submission for professor Vanselow's _COP3003: Object Oriented Programming_ class at Florida Gulf Coast University for the 2019 fall semester. I will be completing the [Artificial Intelligence with Machine Learning in Java](https://academy.oracle.com/en/solutions-curriculum-full.html#machinelearn) Oracle iLearning course.
 
-_Currently on: Week 3_
+---
+- [X] [Week 0](#week-0)
+- [X] [Week 1](#week-1)
+- [X] [Week 2](#week-2)
+- [ ] [Week 3](#week-3)
+- [ ] [Week 4](#week-4)
+- [ ] [Week 5](#week-5)
+- [ ] [Week 6](#week-6)
+- [ ] [Week 7](#week-7)
+---
 
 ## Week 0
 > **Sunday, Sep 15th, 2019 **
