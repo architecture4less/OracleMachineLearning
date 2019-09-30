@@ -16,7 +16,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 ---
 
 ## Week 0
-> **Sunday, Sep 15th, 2019 **
+> **Sunday, Sep 15th, 2019**
 
 - Section 0 - Course resources
   > A course description, overview, curriculum map, and additional resources.
