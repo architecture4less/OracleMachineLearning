@@ -11,7 +11,7 @@
  *
  */
 
-package me.jwotoole9141.oracleml.s3l3;
+package me.jwotoole9141.oracleml.s3l3t1;
 
 /**
  * Test the node class.
