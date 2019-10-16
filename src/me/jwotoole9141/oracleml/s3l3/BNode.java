@@ -2,7 +2,7 @@
  * AUTH: Jared O'Toole
  * DATE: Tue, Oct 15th, 2019
  * PROJ: OracleMachineLearning
- * FILE: Node.java
+ * FILE: BNode.java
  *
  * Node traversal task for Section 3 Lesson 3 of the
  * AI with ML in Java Oracle iLearning Course.
