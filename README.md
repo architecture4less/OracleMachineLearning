@@ -8,7 +8,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - [X] [Week 0](#week-0)
 - [X] [Week 1](#week-1)
 - [X] [Week 2](#week-2)
-- [ ] [Week 3](#week-3)
+- [X] [Week 3](#week-3)
 - [ ] [Week 4](#week-4)
 - [ ] [Week 5](#week-5)
 - [ ] [Week 6](#week-6)
@@ -113,21 +113,42 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - Section 3 – Trees and Recursion
 
   - 3-1 Binary Trees
-    - [ ] Understand a node
-    - [ ] Understand a binary tree
-    - [ ] Create a Node class
+    - [X] Understand a node
+      > A node is a point of data in a tree that can have references to other nodes. These are called child nodes. Every node also has a parent, except for the root node. Nodes that have the same parent are siblings. Nodes that do not have children are leaf nodes.
+    - [X] Understand a binary tree
+      > A binary tree is a data structure in which each node has a maximum of two children: the left and right node. Trees can be used for decision-making algorithms. Binary trees can also be used for efficient search algorithms.  
+    - [X] Create a Node class
+      > [* Node.java](src/me/jwotoole9141/oracleml/s3l1/Node.java)
     
   - 3-2 Recursion
-    - [ ] Define recursion
-    - [ ] Understand recursive methods
-    - [ ] State the advantages and disadvantages of recursion
+    - [X] Define recursion
+      > Recursion is an approach to problem solving by having a function call itself. 
+    - [X] Understand recursive methods
+      > A recursive algorithm must have a way to stop recursing and finally produce a result. This is achieved by defining separate BASE and RECURSION cases. The base case returns a result _without_ making another recursive call.  
+        [* Recursion.java](src/me/jwotoole9141/oracleml/s3l2/Recursion.java)  
+        [* Output of Recursion.main()](media/output_s3l2_recursion.png)
+    - [X] State the advantages and disadvantages of recursion
+      > A recursive algorithm can make code simpler and more readable. However, a recursive solution requires significantly more memory than an iterative solution. Recursive functions carry the risk of a stack overflow if the recursion gets too deep.
     
   - 3-3 Tree Traversal
-    - [ ] Describe tree traversal
-    - [ ] Define pre-order traversal
-    - [ ] Define post-order traversal
-    - [ ] Define in-order traversal
-    - [ ] Create methods for BTree
+    - [X] Describe tree traversal
+      > It is common to want to traverse through a tree's nodes in order to search for something or to gather and print the tree's data. Recursive algorithms simplify the navigation of a tree.
+    - [X] Define pre-order traversal
+      > In pre-order traversal, the node's data is gathered before traversing its left and right nodes (if they exist).
+    - [X] Define post-order traversal
+      > In post-order traversal, the node's data is gathered after traversing its left and right nodes (if they exist).
+    - [X] Define in-order traversal
+      > In in-order traversal, the node's left child is traversed (if it exists), then the node's data is gathered, and then the node's right child is traversed (if it exists).
+    - [X] Create methods for BTree
+      > **Task 1**  
+        [* BNode](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
+        [* NodeDriver.java](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
+        [* Output of NodeDriver.main()](media/output_s3l3t1_node_driver.png)  
+        **Task 2**  
+        [* BNode.java](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
+        [* BTree.java](src/me/jwotoole9141/oracleml/s3l3t2/BTree.java)  
+        [* TreeDriver.java](src/me/jwotoole9141/oracleml/s3l3t2/TreeDriver.java)    
+        [* Output of TreeDriver.main()](media/output_s3l3t2_tree_driver.png)  
 
 
 ## Week 4
