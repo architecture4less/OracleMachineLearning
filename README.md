@@ -88,23 +88,23 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   ```
   Question|Points Available|Points Awarded
   ---|---|--- 
-  [**Section 1**](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717711&CurrentPage=0)|**11**|**10**
-  [The Turing test is](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=0)|1|1
-  [Data exhaust allows systems t...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=0)|1|1
-  [Which of the following are ex...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=0)|1|1
-  [Information can be as simple ...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=0)|1|1
-  [The date and time of a credit...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=0)|1|1
-  [Information is data in contex...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=1)|1|1
-  [Rainfall recorded as 2,3,0,3,...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717712&CurrentPage=1)|1|1
-  [Regression of data is when](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=1)|1|1
-  [You watch a baseball game wit...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=1)|1|0
-  [Data that can be shown in tab...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=1)|1|1
-  [Data shown as a regression ca...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=2)|1|1
-  [**Section 2**](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=2)|**4**|**4**
-  [As personal computers and dev...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=2)|1|1
-  [Using a methodology such as C...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717713&CurrentPage=2)|1|1
-  [Which one of the following is...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717714&CurrentPage=2)|1|1
-  [In the CRISP model, how would...](../../assessment/jsp/test_player.jsp?Init=Y&StartTime=1569805717714&CurrentPage=2)|1|1
+  [**Section 1**]()|**11**|**10**
+  [The Turing test is]()|1|1
+  [Data exhaust allows systems t...]()|1|1
+  [Which of the following are ex...]()|1|1
+  [Information can be as simple ...]()|1|1
+  [The date and time of a credit...]()|1|1
+  [Information is data in contex...]()|1|1
+  [Rainfall recorded as 2,3,0,3,...]()|1|1
+  [Regression of data is when]()|1|1
+  [You watch a baseball game wit...]()|1|0
+  [Data that can be shown in tab...]()|1|1
+  [Data shown as a regression ca...]()|1|1
+  [**Section 2**]()|**4**|**4**
+  [As personal computers and dev...]()|1|1
+  [Using a methodology such as C...]()|1|1
+  [Which one of the following is...]()|1|1
+  [In the CRISP model, how would...]()|1|1
 
 
 ## Week 3
