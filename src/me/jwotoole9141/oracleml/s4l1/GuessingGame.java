@@ -1,3 +1,15 @@
+/*
+ * AUTH: Jared O'Toole
+ * DATE: Wed Oct 16th, 2019
+ * PROJ: OracleMachineLearning
+ * FILE: GuessingGame.java
+ *
+ * "Create a Yes/No Guessing Game" task for Section 4 Lesson 1
+ * of the AI with ML in Java Oracle iLearning Course.
+ *
+ * Define the driver class of the game.
+ */
+
 package me.jwotoole9141.oracleml.s4l1;
 
 public class GuessingGame {
