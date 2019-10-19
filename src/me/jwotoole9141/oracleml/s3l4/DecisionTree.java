@@ -15,6 +15,9 @@ package me.jwotoole9141.oracleml.s3l4;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DecisionTree {
 
     private @Nullable Question root;
@@ -50,5 +53,30 @@ public class DecisionTree {
         return (prefix + "\\-" + symbol + "-" + node.getPrompt() + "\n")
                 + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|  ", "(Y)"))
                 + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "   ", "(N)"));
+    }
+
+    public @NotNull Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("tree", toMap(root));
+        return map;
+    }
+
+    private @Nullable Map<String, Object> toMap(@Nullable Question node) {
+        if (node == null) {
+            return null;
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("prompt", node.getPrompt());
+        map.put("last", node.isLast());
+        map.put("yes", node.getYes());
+        map.put("no", node.getNo());
+        return map;
+    }
+
+    public static @NotNull DecisionTree fromMap(@Nullable Map<?, ?> map) throws ClassCastException {
+        if (map == null) {
+            return new DecisionTree(null);
+        }
+        return new DecisionTree(Question.fromMap((Map<?, ?>) map.get("tree")));
     }
 }
