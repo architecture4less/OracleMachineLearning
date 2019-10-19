@@ -7,7 +7,7 @@
  * "Create a Yes/No Guessing Game" task for Section 4 Lesson 1
  * of the AI with ML in Java Oracle iLearning Course.
  *
- * Define the tree node class.
+ * Defines the question tree node class.
  */
 
 package me.jwotoole9141.oracleml.s3l4;
@@ -17,33 +17,29 @@ import org.jetbrains.annotations.Nullable;
 
 public class Question {
 
-    @NotNull private String prompt;
     private boolean last;
+    private @NotNull String prompt;
+    private @Nullable Question yes;
+    private @Nullable Question no;
 
-    @Nullable private Question yes;
-    @Nullable private Question no;
-
-    public Question(@NotNull String promptText, boolean isBaseCase) {
+    public Question(boolean isLastQuestion, @NotNull String promptText) {
+        last = isLastQuestion;
         prompt = promptText;
-        last = isBaseCase;
     }
 
     public boolean isLast() {
         return last;
     }
 
-    @NotNull
-    public String getPrompt() {
+    public @NotNull String getPrompt() {
         return prompt;
     }
 
-    @Nullable
-    public Question getYes() {
+    public @Nullable Question getYes() {
         return yes;
     }
 
-    @Nullable
-    public Question getNo() {
+    public @Nullable Question getNo() {
         return no;
     }
 
