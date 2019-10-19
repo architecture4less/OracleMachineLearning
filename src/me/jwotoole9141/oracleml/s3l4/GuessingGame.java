@@ -8,30 +8,30 @@
  * of the AI with ML in Java Oracle iLearning Course.
  *
  * Defines the driver class of the game.
+ *
+ * - code to do a console pause from: https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
+ * - code to do a console clear from: https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
  */
 
 package me.jwotoole9141.oracleml.s3l4;
 
-import org.json.simple.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A yes/no guessing game console app.
  *
- * <p>
- * Uses a binary decision tree and json serialization.
- * </p>
- *
  * @author Jared O'Toole
  */
 public class GuessingGame {
 
     public static final Scanner INPUT = new Scanner(System.in);
+    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
      * Run the guessing game through the console.
@@ -54,6 +54,9 @@ public class GuessingGame {
         consolePause();
     }
 
+    /**
+     * Run the game's main menu until the user quits.
+     */
     public static void doMainMenu() {
 
         while (true) {
@@ -68,7 +71,7 @@ public class GuessingGame {
             if (gameFiles.size() > 0) {
 
                 // print that user should choose a game...
-                System.out.println("\nChoose a saved game to play:");
+                System.out.println("\nChoose a saved game...");
 
                 // for each saved game...
                 int choiceIdx = 0;
@@ -86,7 +89,7 @@ public class GuessingGame {
 
             // else, print that no saves were found...
             if (choices.isEmpty()) {
-                System.out.println("\nThere are no saved games to play...");
+                System.out.println("\nThere are no saved games...");
             }
 
             // create a choice to create a new game...
@@ -121,11 +124,14 @@ public class GuessingGame {
 
             // else, response is to play a game...
             else {
-                doPlayGame(choices.get(response));
+                doViewGame(choices.get(response));
             }
         }
     }
 
+    /**
+     * Run the game creation menu until success or the user quits.
+     */
     public static void doCreateGame() {
 
         clearScreen();
@@ -163,7 +169,8 @@ public class GuessingGame {
 
             // try to initialize the file with a new json object...
             try (FileWriter writer = new FileWriter(gameFile)) {
-                writer.write(new JSONObject().toJSONString());
+//                writer.write(new JSONObject().toJSONString());
+                writer.write("{}");
             }
 
             // if there was an io exception...
@@ -181,107 +188,190 @@ public class GuessingGame {
                 // print that the new game has been created...
                 System.out.println("Successfully created the new game!\n");
                 consolePause();
-                doPlayGame(gameFile);
+                doViewGame(gameFile);
                 break;
             }
         }
     }
 
+    /**
+     * View a game until the user quits.
+     *
+     * @param gameFile the data for the game
+     */
+    public static void doViewGame(File gameFile) {
+
+        label:
+        while (true) {
+
+            clearScreen();
+
+            // display game options...
+            System.out.println("\nWhat do you wish to do?\n");
+            System.out.println("[p] play game");
+            System.out.println("[d] display tree");
+            System.out.println("[q] back to main menu\n");
+
+            List<String> choices = new ArrayList<>(Arrays.asList("p", "d", "q"));
+
+            // get user response...
+            String response = "";
+            while (!choices.contains(response)) {
+                System.out.print(">>> ");
+                response = INPUT.nextLine().trim();
+            }
+
+            switch (response) {
+
+                // the user chose to quit...
+                case "q":
+                    break label;
+
+                // the user chose to display the game's data...
+                case "d":
+                    DecisionTree tree = loadTree(gameFile);
+                    if (tree != null) {
+
+                        int size = tree.getSize();
+                        String diagram = tree.getDiagram();
+                        String theme = toDisplayName(gameFile.getName());
+
+                        clearScreen();
+
+                        System.out.printf("The %s Guessing Game has %d questions!\n", theme, size);
+                        System.out.println(diagram);
+
+                        consolePause();
+                    }
+                    break;
+
+                // the user chose to play the game...
+                case "p":
+                    doPlayGame(gameFile);
+                    break label;
+            }
+        }
+    }
+
+    /**
+     * Play a game until the user quits.
+     *
+     * @param gameFile the data for the game
+     */
     public static void doPlayGame(File gameFile) {
 
-        System.out.println("TODO Played a game...");
-        consolePause();
+        // try to load the game...
+        DecisionTree tree = loadTree(gameFile);
 
-        // try...
-        {
-            // create the binary tree using the chosen game's serialized data file
+        // quit if the game couldn't be loaded...
+        if (tree == null) {
+            return;
         }
-        // except...
-        {
-            // print error message
 
-            // wait for user input
+        // initialize question and round number...
+        Question prevQuestion = null;
+        Question question = tree.getRoot();
+        int round = 0;
 
-            // continue main loop
-        }
-        // initialize current node and round number
+        // play rounds...
+        while (true) {
 
-        // while true...
-        {
-            // show round number and brief help / instr
+            // show round number...
+            System.out.printf("\nRound %d\n", round);
 
-            // if the current node is null...
-            {
-                // TODO do the computer-lost routine...
+            // if the current question is null...
+            if (question == null) {
 
-                // ask the user to play again or go to main menu
-
-                // get user response
-
-                // if user wants to play again...
-                {
-                    // initialize current node and round number
-                }
+                // the computer lost...
+                doComputerLost(tree, prevQuestion);
+                break;
             }
-            // show the current node's question
+            // show the current question's prompt...
+            System.out.println(question.getPrompt());
 
-            // also show that the user can quit at any time
+            // show the user's choices...
+            System.out.println("(use 'y' or 'n' to respond or 'q' to exit)\n");
+            List<String> choices = new ArrayList<>(Arrays.asList("y", "n", "q"));
 
-            // initialize user input
+            // initialize user input...
+            String response = "";
 
             // while input is invalid...
-            {
-                // get user response
+            while (!choices.contains(response)) {
 
-                // if response is a valid choice (y/n)... break response loop
+                // get user response...
+                System.out.print(">>> ");
+                response = INPUT.nextLine().trim().substring(0, 1);
             }
-            // if response is to quit...
-            {
-                // serialize the binary tree and save it to the game's file
+            switch (response) {
 
-                // break main loop
-            }
-            // if the current node is marked as win/loose case...
-            {
-                // if the response is affirmative...
-                {
-                    // print that the computer has won!
+                // the user chose to quit...
+                case "q":
+                    break;
 
-                    // ask the user to play again or go to main menu
-
-                    // get user response
-
-                    // if user wants to play again...
-                    {
-                        // TODO this flow isn't good for immediately playing a game again
-                        // initialize current node and round number
+                // the user answered yes...
+                case "y":
+                    // if this is the last question, computer won...
+                    if (question.isLast()) {
+                        doComputerWon();
                     }
-                    // else... break the game loop
-                }
-                // if the response is negative...
-                {
-                    // TODO do the computer-lost routine...
-
-                    // ask the user to play again or go to main menu
-
-                    // get user response
-
-                    // if user wants to play again...
-                    {
-                        // initialize current node and round number
+                    // else, go to the next question...
+                    else {
+                        prevQuestion = question;
+                        question = question.getYes();
                     }
-                }
-            }
+                    break;
 
-            // increment round number
+                // the user answered no...
+                case "n":
+                    // if this is the last question, computer lost...
+                    if (question.isLast()) {
+                        doComputerLost(tree, question);
+                    }
+                    // else, go to the next question...
+                    else {
+                        prevQuestion = question;
+                        question = question.getYes();
+                    }
+                    break;
+            }
+            // increment round
+            round++;
         }
+
+        // save the game...
+        saveTree(tree, gameFile);
+    }
+
+    public static void doComputerWon() {
+
+        System.out.println("I won!");
+    }
+
+    public static void doComputerLost(DecisionTree tree, Question question) {
+
+        // TODO
+
+        // print computer lost message...
+        System.out.println("I give up... what was the answer?");
+
+        // get the answer from user...
+        System.out.println();
+        consolePause();
+
+        // computer asks what makes this answer unique...
+
+        // get response from user...
+
+        // create question from the response...
+
+        // add question to the tree...
     }
 
     /**
      * Clear all text from the console.
      */
     public static void clearScreen() {
-        // https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
         try {
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         }
@@ -291,10 +381,9 @@ public class GuessingGame {
     }
 
     /**
-     * Tell the user to press any key to continue...
+     * Tell the user to press any key to continue.
      */
     public static void consolePause() {
-        // https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
         try {
             new ProcessBuilder("cmd", "/c", "pause").inheritIO().start().waitFor();
         }
@@ -311,15 +400,6 @@ public class GuessingGame {
     public static File getDirectory() {
 
         return new File(new File("").getAbsolutePath());
-        /*
-        try {
-            return new File(GuessingGame.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toURI());
-        }
-        catch (URISyntaxException ex) {
-            return null;
-        }
-         */
     }
 
     /**
@@ -433,5 +513,38 @@ public class GuessingGame {
 
         // convert spaces to underscores, set everything lowercase, and add an underscore...
         return String.join("_", displayName.toLowerCase().split(" ")).trim() + ".json";
+    }
+
+    /**
+     * Save a game to its file.
+     *
+     * @param tree the game's decision tree
+     * @param file the game's file
+     */
+    public static void saveTree(@NotNull DecisionTree tree, @NotNull File file) {
+
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(MAPPER.writeValueAsString(tree));
+        }
+        catch (IOException ex) {
+            System.out.printf("Could not save game data: %s\n", ex.getMessage());
+        }
+    }
+
+    /**
+     * Load a game from its file.
+     *
+     * @param file the game file to load
+     * @return the game's decision tree
+     */
+    public static @Nullable DecisionTree loadTree(@NotNull File file) {
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            return MAPPER.readValue(reader.lines().collect(Collectors.joining()), DecisionTree.class);
+        }
+        catch (IOException ex) {
+            System.out.printf("Could not load game data: %s\n", ex.getMessage());
+            return null;
+        }
     }
 }
