@@ -7,31 +7,31 @@
  * "Create a Yes/No Guessing Game" task for Section 4 Lesson 1
  * of the AI with ML in Java Oracle iLearning Course.
  *
- * Define the driver class of the game.
+ * Defines the driver class of the game.
  */
 
-package me.jwotoole9141.oracleml.s4l1;
+package me.jwotoole9141.oracleml.s3l4;
+
+import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A yes/no guessing game console app.
  *
  * <p>
- *   Uses a binary decision tree and json serialization.
+ * Uses a binary decision tree and json serialization.
  * </p>
  *
  * @author Jared O'Toole
  */
 public class GuessingGame {
 
-    public static boolean runningApp = true;
-    public static boolean playingGame = false;
-
-    public static Scanner input = new Scanner(System.in);
+    public static final Scanner INPUT = new Scanner(System.in);
 
     /**
      * Run the guessing game through the console.
@@ -40,131 +40,154 @@ public class GuessingGame {
      */
     public static void main(String[] args) {
 
-        // clear the screen
+        // print a welcome message...
         clearScreen();
-
-        // print a welcome message
-        System.out.println();
-        System.out.println("Welcome to the guessing game!");
-        System.out.println();
-
+        System.out.println("\nWelcome to the guessing game!\n");
         consolePause();
+
+        // run the main menu...
         doMainMenu();
+
+        // print a goodbye message...
+        clearScreen();
+        System.out.println("\nGoodbye!\n");
+        consolePause();
     }
 
     public static void doMainMenu() {
 
-        while (runningApp) {
+        while (true) {
 
-            // clear the screen
             clearScreen();
 
-            // ----------------------------------------------
-
-            // initialize list of user response choices
+            // initialize list of user response choices...
             Map<String, File> choices = new HashMap<>();
 
             // if saved games are found...
-            File gamesDir = getDirectory();
-            if (gamesDir != null) {
+            List<File> gameFiles = findGames(getDirectory());
+            if (gameFiles.size() > 0) {
 
-                List<File> gameFiles = findGames(gamesDir.getParentFile());
-                if (gameFiles.size() > 0) {
+                // print that user should choose a game...
+                System.out.println("\nChoose a saved game to play:");
 
-                    // print that user should choose a game
-                    System.out.println();
-                    System.out.println("Choose a saved game to play:");
+                // for each saved game...
+                int choiceIdx = 0;
+                for (File gameFile : gameFiles) {
 
-                    // for each saved game...
-                    int choiceIdx = 0;
-                    for (File gameFile : gameFiles) {
+                    // add it to the list of choices...
+                    choices.put(String.valueOf(choiceIdx), gameFile);
 
-                        // add the option to the list of choices
-                        choices.put(String.valueOf(choiceIdx), gameFile);
-
-                        // print an option for that save
-                        String theme = pluralized(toDisplayName(gameFile.getName()));
-                        System.out.printf("  [%d] %s%n", choiceIdx, theme);
-                        choiceIdx++;
-                    }
+                    // print out the choice...
+                    String theme = pluralized(toDisplayName(gameFile.getName()));
+                    System.out.printf("  [%d] %s%n", choiceIdx, theme);
+                    choiceIdx++;
                 }
             }
-            // else... print that no saves were found
+
+            // else, print that no saves were found...
             if (choices.isEmpty()) {
-                System.out.println("There are no saved games to play...");
+                System.out.println("\nThere are no saved games to play...");
             }
 
-            // create a choice to create a new game
+            // create a choice to create a new game...
             System.out.println("  [n] new game");
             choices.put("n", null);
 
-            // create a choice to quit
+            // create a choice to quit...
             System.out.println("  [q] quit");
             choices.put("q", null);
 
-            // ----------------------------------------------
-
-            // initialize user response
+            // initialize user response...
             String response = "";
             System.out.println();
 
             // while response is insufficient...
             while (!choices.containsKey(response)) {
 
-                // get user response
+                // get user response...
                 System.out.print(">>> ");
-                response = input.nextLine();
+                response = INPUT.nextLine();
             }
-
-            // ----------------------------------------------
 
             // if response is to quit...
             if (response.equals("q")) {
-
-                doQuitApp();
+                break;
             }
-
-            // ----------------------------------------------
 
             // if response is to create a new game...
             else if (response.equals("n")) {
-
                 doCreateGame();
             }
 
-            // ----------------------------------------------
-
             // else, response is to play a game...
             else {
-
-                doPlayGame();
+                doPlayGame(choices.get(response));
             }
         }
     }
 
     public static void doCreateGame() {
 
-        System.out.println("TODO created a game...");
-        consolePause();
+        clearScreen();
+        System.out.println("Creating a new game...");
 
-        // while true...
-        {
-            // prompt user for game's theme (non-plural)
+        // prompt user for game's theme (non-plural)...
+        System.out.println("\nWhat is the theme of this game?");
+        System.out.println("(Use a non-plural word or phrase)");
+        System.out.println("(Use 'q' to go back)\n");
 
-            // get user response
+        while (true) {
 
-            // prompt for confirmation
+            // get user response...
+            String response = "";
+            while (response.isEmpty()) {
 
-            // if user confirms... break response loop
-            {
-                // print that the new game has been created
+                System.out.print(">>> ");
+                response = INPUT.nextLine().trim();
+            }
 
-                // change response to play a game
+            // if response is 'q', break the loop...
+            if (response.equals("q")) {
+                break;
+            }
+
+            // create a file name for the game...
+            String gameFileName = toFileName(response);
+            File gameFile = new File(gameFileName);
+
+            // make sure it doesn't exist yet...
+            if (gameFile.exists()) {
+                System.out.println("A game with that theme already exists...\n");
+                continue;
+            }
+
+            // try to initialize the file with a new json object...
+            try (FileWriter writer = new FileWriter(gameFile)) {
+                writer.write(new JSONObject().toJSONString());
+            }
+
+            // if there was an io exception...
+            catch (IOException ex) {
+
+                // print error and break the loop...
+                System.out.printf("Unable to create new game with file %s...\n\n", ex.getMessage());
+                consolePause();
+                break;
+            }
+
+            // if the file now exists...
+            if (gameFile.exists()) {
+
+                // print that the new game has been created...
+                System.out.println("Successfully created the new game!\n");
+                consolePause();
+                doPlayGame(gameFile);
+                break;
             }
         }
     }
 
-    public static void doPlayGame() {
+    public static void doPlayGame(File gameFile) {
 
         System.out.println("TODO Played a game...");
         consolePause();
@@ -254,16 +277,6 @@ public class GuessingGame {
         }
     }
 
-    public static void doQuitApp() {
-
-        // print goodbye message
-        System.out.println("Goodbye!");
-        consolePause();
-
-        // break main loop
-        runningApp = false;
-    }
-
     /**
      * Clear all text from the console.
      */
@@ -296,6 +309,9 @@ public class GuessingGame {
      * @return the folder if it is valid, else null
      */
     public static File getDirectory() {
+
+        return new File(new File("").getAbsolutePath());
+        /*
         try {
             return new File(GuessingGame.class.getProtectionDomain()
                     .getCodeSource().getLocation().toURI());
@@ -303,6 +319,7 @@ public class GuessingGame {
         catch (URISyntaxException ex) {
             return null;
         }
+         */
     }
 
     /**
@@ -335,10 +352,10 @@ public class GuessingGame {
      * <p>
      * Here is an example of each rule taken into consideration:
      *   <ul>
+     *     <li>Cactus -> Cacti</li>
      *     <li>Compass -> Compasses</li>
      *     <li>Fish -> Fishes</li>
      *     <li>Money -> Monies</li>
-     *     <li>Cactus -> Cacti</li>
      *     <li>Pillow -> Pillows</li>
      *   </ul>
      * </p>
@@ -348,18 +365,32 @@ public class GuessingGame {
      */
     public static String pluralized(String word) {
 
-        if (word.endsWith("s") || word.endsWith("sh")) {
+        if (word.endsWith("us")) {
+            return word.substring(0, word.length() - 2) + "i";
+        }
+        else if (word.endsWith("s") || word.endsWith("sh")) {
             return word + "es";
         }
         else if (word.endsWith("y")) {
             return word.substring(0, word.length() - 1) + "ies";
         }
-        else if (word.endsWith("us")) {
-            return word.substring(0, word.length() - 1) + "i";
-        }
         else {
             return word + "s";
         }
+    }
+
+    /**
+     * Capitalize the first letter of each word in the given phrase.
+     *
+     * @param phrase the word or phrase
+     * @return the capitalized version
+     */
+    public static String capitalized(String phrase) {
+
+        return Arrays.stream(phrase.split(" ")).map(
+                word -> (word.substring(0, 1).toUpperCase()
+                        + word.substring(1).toLowerCase() + " ")
+        ).collect(Collectors.joining());
     }
 
     /**
@@ -375,18 +406,32 @@ public class GuessingGame {
      */
     public static String toDisplayName(String fileName) {
 
-        // remove the potential file extension
+        // remove the potential file extension...
         int extIdx = fileName.lastIndexOf('.');
         fileName = (extIdx <= 0) ? fileName : fileName.substring(0, extIdx);
 
-        // convert underscores to spaces and capitalize each word
-        StringBuilder result = new StringBuilder();
-        for (String word : fileName.split("_")) {
+        // convert underscores to spaces and capitalize each word...
+        return Arrays.stream(fileName.split("_")).map(
+                word -> word.substring(0, 1).toUpperCase()
+                        + word.substring(1).toLowerCase()
 
-            result.append(word.substring(0, 1).toUpperCase());
-            result.append(word.substring(1));
-            result.append(" ");
-        }
-        return result.toString().trim();
+        ).collect(Collectors.joining(" ")).trim();
+    }
+
+    /**
+     * Convert a game's name in display-name format to file-name format.
+     *
+     * <p>
+     * The file name uses all lowercase, underscores instead of spaces,
+     * and includes the json file name extension.
+     * </p>
+     *
+     * @param displayName the game's display name
+     * @return the game's file name
+     */
+    public static String toFileName(String displayName) {
+
+        // convert spaces to underscores, set everything lowercase, and add an underscore...
+        return String.join("_", displayName.toLowerCase().split(" ")).trim() + ".json";
     }
 }
