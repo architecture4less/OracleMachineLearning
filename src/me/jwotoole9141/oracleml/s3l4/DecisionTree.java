@@ -57,19 +57,7 @@ public class DecisionTree {
 
     public @NotNull Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("tree", toMap(root));
-        return map;
-    }
-
-    private @Nullable Map<String, Object> toMap(@Nullable Question node) {
-        if (node == null) {
-            return null;
-        }
-        Map<String, Object> map = new HashMap<>();
-        map.put("prompt", node.getPrompt());
-        map.put("last", node.isLast());
-        map.put("yes", node.getYes());
-        map.put("no", node.getNo());
+        map.put("tree", (root != null) ? (root.toMap()) : null);
         return map;
     }
 

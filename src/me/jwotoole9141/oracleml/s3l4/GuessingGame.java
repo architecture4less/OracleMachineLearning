@@ -208,7 +208,7 @@ public class GuessingGame {
      *
      * @param gameFile the data for the game
      */
-    public static void doViewGame(File gameFile) {
+    public static void doViewGame(@NotNull File gameFile) {
 
         loopViewGame:
         while (true) {
@@ -275,7 +275,7 @@ public class GuessingGame {
      *
      * @param gameFile the data for the game
      */
-    public static void doPlayGame(File gameFile) {
+    public static void doPlayGame(@NotNull File gameFile) {
 
         // try to load the game...
         DecisionTree tree = loadTree(gameFile);
@@ -284,6 +284,9 @@ public class GuessingGame {
         if (tree == null) {
             return;
         }
+
+        // get the game's theme for reference...
+        String theme = toDisplayName(gameFile.getName());
 
         // initialize the question and round number...
         Question prevQuestion = null;
@@ -301,7 +304,7 @@ public class GuessingGame {
             if (question == null) {
 
                 // the computer lost...
-                doComputerLost(tree, prevQuestion);
+                doComputerLost(theme, tree, prevQuestion);
                 break;
             }
             // show the current question's prompt...
@@ -345,7 +348,7 @@ public class GuessingGame {
                 case "n":
                     // if this is the last question, computer lost...
                     if (question.isLast()) {
-                        doComputerLost(tree, question);
+                        doComputerLost(theme, tree, question);
                         break loopPlayGame;
                     }
                     // else, go to the next question...
@@ -365,21 +368,40 @@ public class GuessingGame {
 
     public static void doComputerWon() {
 
-        System.out.println("I won!");
+        System.out.println("\nI won!\n");
     }
 
-    public static void doComputerLost(DecisionTree tree, Question question) {
+    public static void doComputerLost(@NotNull String theme, @NotNull DecisionTree tree, @Nullable Question question) {
 
-        // TODO
+        String themePlural = pluralized(theme);
 
         // print computer lost message...
-        System.out.println("I give up... what was the answer?");
+        System.out.println("\nI give up... what was the answer?");
+        System.out.println("(use a non-plural word or phrase)\n");
 
-        // get the answer from user...
-        System.out.println();
-        consolePause();
+        // initialize user response...
+        String response = "";
 
-        // computer asks what makes this answer unique...
+        // while response is insufficient...
+        while (response.isEmpty()) {
+
+            // get user response...
+            System.out.print(">>> ");
+            response = INPUT.nextLine().trim();
+        }
+
+        // if there was no question to begin with...
+        if (question == null) {
+
+            System.out.printf("\nSo, tell me something about %s...\n", themePlural);
+        }
+        else if (question.isLast()) {
+            // computer asks what makes this answer unique...
+            System.out.println("So, what makes a %s different from a %s?");
+        }
+        else {
+
+        }
 
         // get response from user...
 
@@ -417,7 +439,7 @@ public class GuessingGame {
      *
      * @return the folder if it is valid, else null
      */
-    public static File getDirectory() {
+    public static @NotNull File getDirectory() {
 
         return new File(new File("").getAbsolutePath());
     }
@@ -427,7 +449,7 @@ public class GuessingGame {
      *
      * @return json files that represent serialized games
      */
-    public static List<File> findGames(File directory) {
+    public static @NotNull List<File> findGames(@Nullable File directory) {
 
         List<File> results = new ArrayList<>();
         if (directory == null) {
@@ -463,7 +485,7 @@ public class GuessingGame {
      * @param word a word to pluralize
      * @return the pluralized word
      */
-    public static String pluralized(String word) {
+    public static @NotNull String pluralized(@NotNull String word) {
 
         if (word.endsWith("us")) {
             return word.substring(0, word.length() - 2) + "i";
@@ -485,7 +507,7 @@ public class GuessingGame {
      * @param phrase the word or phrase
      * @return the capitalized version
      */
-    public static String capitalized(String phrase) {
+    public static @NotNull String capitalized(@NotNull String phrase) {
 
         return Arrays.stream(phrase.split(" ")).map(
                 word -> (word.substring(0, 1).toUpperCase()
@@ -504,7 +526,7 @@ public class GuessingGame {
      * @param fileName the game's file name
      * @return the game's display name
      */
-    public static String toDisplayName(String fileName) {
+    public static @NotNull String toDisplayName(@NotNull String fileName) {
 
         // remove the potential file extension...
         int extIdx = fileName.lastIndexOf('.');
@@ -529,7 +551,7 @@ public class GuessingGame {
      * @param displayName the game's display name
      * @return the game's file name
      */
-    public static String toFileName(String displayName) {
+    public static @NotNull String toFileName(@NotNull String displayName) {
 
         // convert spaces to underscores, set everything lowercase, and add an underscore...
         return String.join("_", displayName.toLowerCase().split(" ")).trim() + ".json";
