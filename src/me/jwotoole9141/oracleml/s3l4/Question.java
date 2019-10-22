@@ -12,13 +12,11 @@
 
 package me.jwotoole9141.oracleml.s3l4;
 
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Question {
 
@@ -55,6 +53,7 @@ public class Question {
         private @NotNull String[] negDeclareKeys;
 
         Relation(@NotNull String q, @NotNull String c, @NotNull String nc, @NotNull String[] d, @NotNull String[] nd) {
+
             this.questionFormat = q;
             this.confirmFormat = c;
             this.negConfirmFormat = nc;
@@ -82,10 +81,60 @@ public class Question {
             return negDeclareKeys;
         }
 
-        public static Relation getRelation(String sentence) {
+        public static @Nullable Pair<Relation, String> parse(@NotNull String sentence) {
 
             String sentenceLower = sentence.toLowerCase();
 
+            HashMap<Pair<Relation, Boolean>, Pair<List<String>, Integer>> matches = new HashMap<>();
+            Pair<Relation, Boolean> bestMatch = null;
+            int bestMatchIndex = 0;
+            int bestMatchPower = 0;
+
+            // for each subject relation type...
+            for (Relation rel : values()) {
+
+                Pair<Relation, Boolean> posRel = new Pair<>(rel, true);
+                Pair<Relation, Boolean> negRel = new Pair<>(rel, false);
+
+                // find any declare keys used...
+                matches.put(posRel, new Pair<>(new ArrayList<>(), 0));
+                for (String key : rel.declareKeys) {
+                    if (sentenceLower.contains(key)) {
+                        matches.get(posRel).getKey().add(key);
+                        if (key.length() > bestMatchPower) {
+                            bestMatchPower = key.length();
+                            bestMatchIndex = matches.get(posRel).getKey().size() - 1;
+                            bestMatch = posRel;
+                        }
+                    }
+                }
+                // find any neg declare keys used...
+                matches.put(negRel, new Pair<>(new ArrayList<>(), 0));
+                for (String key : rel.negDeclareKeys) {
+                    if (sentenceLower.contains(key)) {
+                        matches.get(negRel).getKey().add(key);
+                        if (key.length() > bestMatchPower) {
+                            bestMatchPower = key.length();
+                            bestMatchIndex = matches.get(posRel).getKey().size() - 1;
+                            bestMatch = negRel;
+                        }
+                    }
+                }
+            }
+
+            // if a match was found, return the relation and subject...
+            if (bestMatch != null) {
+                String key = matches.get(bestMatch).getKey().get(bestMatchIndex);
+                int subjectIndex = sentenceLower.lastIndexOf(key) + key.length();
+                return new Pair<>(bestMatch.getKey(), sentence.substring(subjectIndex));
+            }
+            // else, return null...
+            else {
+                return null;
+            }
+        }
+
+            /*
             HashMap<Relation, List<String>> matches = new HashMap<>();
             HashMap<Relation, List<String>> negMatches = new HashMap<>();
 
@@ -107,7 +156,53 @@ public class Question {
                     }
                 }
             }
+            // determine the match power of each relation type...
+            HashMap<Relation, Integer> matchPower = determineMatchPower(matches);
+            HashMap<Relation, Integer> negMatchPower = determineMatchPower(negMatches);
+
+            // get the best match for the declare and neg declare keys...
+            Map.Entry<Relation, Integer> bestMatchPower = null;
+            Map.Entry<Relation, Integer> bestNegMatchPower = null;
+
+            for (Map.Entry<Relation, Integer> entry : matchPower.entrySet()) {
+                if (bestMatchPower == null || entry.getValue() > bestMatchPower.getValue()) {
+                    bestMatchPower = entry;
+                }
+            }
+            for (Map.Entry<Relation, Integer> entry : negMatchPower.entrySet()) {
+                if (bestNegMatchPower == null || entry.getValue() > bestNegMatchPower.getValue()) {
+                    bestNegMatchPower = entry;
+                }
+            }
+            // if a declare key matched best...
+            if (((bestMatchPower == null) ? 0 : bestMatchPower.getValue())
+                    > ((bestNegMatchPower == null) ? 0 : bestNegMatchPower.getValue())) {
+
+                bestMatchPower.getKey()
+            }
+            // else, a neg declare key matched best...
+            else {
+
+            }
+
+            // return (bestMatch == null) ? null : bestMatch.getKey();
         }
+
+        private static HashMap<Relation, Integer> determineMatchPower(HashMap<Relation, List<String>> matches) {
+
+            HashMap<Relation, Integer> matchPowers = new HashMap<>();
+            for (Relation rel : matches.keySet()) {
+                int maxSize = 0;
+                for (String key : matches.get(rel)) {
+                    if (key.length() > maxSize) {
+                        maxSize = key.length();
+                    }
+                }
+                matchPowers.put(rel, maxSize);
+            }
+            return matchPowers;
+        }
+        */
     }
 
     private @NotNull Relation relation;
