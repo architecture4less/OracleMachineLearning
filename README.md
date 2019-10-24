@@ -1,4 +1,11 @@
-
+<!--
+  AUTH: Jared O'Toole
+  DATE: Sun Sep 15th 2019
+  PROJ: OracleMachineLearning
+  FILE: README.md
+  
+  The project's README file.
+-->
 
 # OracleMachineLearning
 
@@ -9,10 +16,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - [X] [Week 1](#week-1)
 - [X] [Week 2](#week-2)
 - [X] [Week 3](#week-3)
-- [ ] [Week 4](#week-4)
-- [ ] [Week 5](#week-5)
-- [ ] [Week 6](#week-6)
+- [ ] [Week 4](#week-4,-5,-6)
 - [ ] [Week 7](#week-7)
+- [ ] [Week 8](#week-8,-9)
+- [ ] [Week 9](#week-10,-11)
 ---
 
 ## Week 0
@@ -151,19 +158,23 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
         [* Output of TreeDriver.main()](media/output_s3l3t2_tree_driver.png)  
 
 
-## Week 4
-> **Sunday, Oct 13th, 2019**
+## Week 4, 5, 6
+> **Sunday, Oct 13th, 2019** 
+> **Sunday, Oct 20th, 2019** 
+> **Sunday, Oct 27th, 2019** 
 
 - Section 3 – Trees and Recursion
     
   - 3-4 Yes/No Game
-    - [ ] Describe the use of decision trees
+    - [X] Describe the use of decision trees
+      > Decision trees are useful for building a branching network of sequential questions and answers. A few examples are a technical troubleshooting guide or a medical diagnosis.
     - [ ] Create a yes/no game
-    - [ ] State the problems of creating a manual decision tree
+      > [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)
+    - [X] State the problems of creating a manual decision tree
+      > The main problem with creating a manual decision tree is information entropy. An answer might take a large number of questions to reach. But, if the tree were to be re-ordered with a good decision tree algorithm, it may take significantly fewer questions. Manually determining the most significant question to ask first for a sample of data is difficult.
 
-
-## Week 5
-> **Sunday, Oct 20th, 2019**
+## Week 7
+> **Sunday, Nov 3rd, 2019**
 
 - Section 4 – Entropy and the ID3 Algorithm
 
@@ -184,8 +195,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Calculate gain
     - [ ] Manually work through the ID3 algorithm
 
-## Week 6
-> **Sunday, Oct 27th, 2019**
+## Week 8, 9
+> **Sunday, Nov 10th, 2019** 
+> **Sunday, Nov 17th, 2019** 
 
 - Section 4 – Entropy and the ID3 Algorithm
 
@@ -193,10 +205,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Understand non binary tree structure
     - [ ] Create a non-binary tree structure
 
-
-## Week 7
-> **Sunday, Nov 3rd, 2019**
+## Week 10, 11
+> **Sunday, Nov 24th, 2019** 
+> **Sunday, Dec 1st, 2019** 
 
 - [ ] Complete Section 3 & 4 Quiz
-
 - [ ] Complete AiML Final Exam
