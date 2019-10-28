@@ -16,123 +16,82 @@ import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Relation {
 
-    IS_A("Is it a type of %s?",
+    OF("Is it a type of %s?",
             "%s is a type of %s.",
+            Pattern.compile("(?<=is a (?:type|kind) of ).*",
+                    Pattern.CASE_INSENSITIVE)),
+
+    NOT_OF("Is it NOT a type of %s?",
             "%s isn't a type of %s.",
-            new String[] { "is a type of", "is a kind of" },
-            new String[] { "isnt a type of", "is not a type of", "isnt a kind of", "is not a kind of" }),
+            Pattern.compile("(?<=is(?:n'?t| not) a (?:type|kind) of ).*",
+                    Pattern.CASE_INSENSITIVE)),
 
     IS("Is it %s?",
             "%s is %s.",
+            Pattern.compile("(?<=is ).*",
+                    Pattern.CASE_INSENSITIVE)),
+
+    IS_NOT("Is it NOT %s?",
             "%s isn't %s.",
-            new String[] { "is" },
-            new String[] { "isnt", "is not" }),
+            Pattern.compile("(?<=is(?:n'?t| not) ).*",
+                    Pattern.CASE_INSENSITIVE)),
 
     HAS("Does it have %s?",
             "%s has %s.",
+            Pattern.compile("(?<=(?:has|does have) ).*",
+                    Pattern.CASE_INSENSITIVE)),
+
+    HAS_NOT("Does it NOT have %s?",
             "%s hasn't %s.",
-            new String[] { "has" },
-            new String[] { "hasnt", "has not", "doesnt have", "does not have" }),
+            Pattern.compile("(?<=(?:has(?:n'?t| not)|does(?:n'?t| not) have) ).*",
+                    Pattern.CASE_INSENSITIVE)),
 
     DOES("Does it %s?",
             "%s can %s.",
+            Pattern.compile("(?<=(?:can|does) ).*",
+                    Pattern.CASE_INSENSITIVE)),
+
+    DOES_NOT("Does it NOT %s?",
             "%s doesn't %s.",
-            new String[] { "can", "does" },
-            new String[] { "cant", "cannot", "can not", "doesnt", "does not" });
+            Pattern.compile("(?<=(?:can(?:'?t| ?not))|does(?:n'?t| not) ).*",
+                    Pattern.CASE_INSENSITIVE));
 
     private @NotNull String questionFormat;
-    private @NotNull String confirmFormat;
-    private @NotNull String negConfirmFormat;
-    private @NotNull String[] declareKeys;
-    private @NotNull String[] negDeclareKeys;
+    private @NotNull String statementFormat;
+    private @NotNull Pattern statementPattern;
 
-    Relation(@NotNull String q, @NotNull String c, @NotNull String nc, @NotNull String[] d, @NotNull String[] nd) {
+    Relation(@NotNull String question, @NotNull String statement, @NotNull Pattern pattern) {
 
-        this.questionFormat = q;
-        this.confirmFormat = c;
-        this.negConfirmFormat = nc;
-        this.declareKeys = d;
-        this.negDeclareKeys = nd;
+        this.questionFormat = question;
+        this.statementFormat = statement;
+        this.statementPattern = pattern;
     }
 
     public @NotNull String getQuestionFormat() {
         return questionFormat;
     }
 
-    public @NotNull String getConfirmFormat() {
-        return confirmFormat;
+    public @NotNull String getStatementFormat() {
+        return statementFormat;
     }
 
-    public @NotNull String getNegConfirmFormat() {
-        return negConfirmFormat;
+    public @NotNull Pattern getStatementPattern() {
+        return statementPattern;
     }
 
-    public @NotNull String[] getDeclareKeys() {
-        return declareKeys;
-    }
+    public static @Nullable Pair<Relation, String> parse(@NotNull String sentence) {
 
-    public @NotNull String[] getNegDeclareKeys() {
-        return negDeclareKeys;
-    }
-
-    public static @Nullable Pair<Pair<Relation, Boolean>, String> parse(@NotNull String sentence) {
-
-        String sentenceLower = sentence.toLowerCase();
-
-        HashMap<Pair<Relation, Boolean>, Pair<List<String>, Integer>> matches = new HashMap<>();
-        Pair<Relation, Boolean> bestMatch = null;
-        int bestMatchIndex = 0;
-        int bestMatchPower = 0;
-
-        // for each subject relation type...
         for (Relation rel : values()) {
-
-            Pair<Relation, Boolean> posRel = new Pair<>(rel, true);
-            Pair<Relation, Boolean> negRel = new Pair<>(rel, false);
-
-            // find any declare keys used...
-            matches.put(posRel, new Pair<>(new ArrayList<>(), 0));
-            for (String key : rel.declareKeys) {
-                //noinspection DuplicatedCode
-                if (sentenceLower.contains(key)) {
-                    matches.get(posRel).getKey().add(key);
-                    if (key.length() > bestMatchPower) {
-                        bestMatchPower = key.length();
-                        bestMatchIndex = matches.get(posRel).getKey().size() - 1;
-                        bestMatch = posRel;
-                    }
-                }
-            }
-            // find any neg declare keys used...
-            matches.put(negRel, new Pair<>(new ArrayList<>(), 0));
-            for (String key : rel.negDeclareKeys) {
-                //noinspection DuplicatedCode
-                if (sentenceLower.contains(key)) {
-                    matches.get(negRel).getKey().add(key);
-                    if (key.length() > bestMatchPower) {
-                        bestMatchPower = key.length();
-                        bestMatchIndex = matches.get(negRel).getKey().size() - 1;
-                        bestMatch = negRel;
-                    }
-                }
+            Matcher matcher = rel.statementPattern.matcher(sentence);
+            if (matcher.find()) {
+                return new Pair<>(rel, matcher.group());
             }
         }
-
-        // if a match was found, return the relation and subject...
-        if (bestMatch != null) {
-            String key = matches.get(bestMatch).getKey().get(bestMatchIndex);
-            int subjectIndex = sentenceLower.lastIndexOf(key) + key.length();
-            return new Pair<>(bestMatch, sentence.substring(subjectIndex));
-        }
-        // else, return null...
-        else {
-            return null;
-        }
+        return null;
     }
 }
