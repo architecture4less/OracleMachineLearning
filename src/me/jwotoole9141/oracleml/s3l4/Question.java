@@ -91,4 +91,10 @@ public class Question {
         node.setNo(fromMap((Map<?, ?>) map.get("no")));
         return node;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Question[relation=%s, subject='%s', last=%b, yes=%s, no=%s]",
+                relation.name(), subject, last, yes == null ? "null" : "...", no == null ? "null" : "...");
+    }
 }
