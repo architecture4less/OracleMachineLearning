@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: me.jwotoole9141.oracleml.s3l4.GuessingGame
+
