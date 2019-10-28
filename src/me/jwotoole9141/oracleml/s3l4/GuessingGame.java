@@ -541,7 +541,7 @@ public class GuessingGame {
                 Boolean firstAnswer = answers.get(0).getValue1();
                 System.out.printf("\nSo, %s.\n\nBut, what makes it different from '%s'?\n",
                         firstQuestion.getAnswer(firstAnswer, "'" + subject + "'")
-                                + ((answers.size() > 2) ? ", " : "")
+                                + ((answers.size() >= 2) ? ", " : "")
                                 + answers.subList(1, answers.size()).stream()
                                 .map(prevQA -> {
                                     Question question = prevQA.getValue0();
@@ -612,6 +612,7 @@ public class GuessingGame {
                 Boolean prevAnswer = prevQA.getValue1();
 
                 // insert between these two questions...
+                newQuestion.setYesOrNo(!newAnswer, question);
                 prevQuestion.setYesOrNo(prevAnswer, newQuestion);
             }
             // else, insert above the root question...
