@@ -8,6 +8,9 @@
  * of the AI with ML in Java Oracle iLearning Course.
  *
  * Defines the Utils class.
+ *
+ * - console pause code: https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
+ * - console clear code: https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
  */
 
 package me.jwotoole9141.oracleml.s3l4;
@@ -205,7 +208,9 @@ public class Utils {
             writer.write(new JSONObject(tree.toMap()).toJSONString());
         }
         catch (IOException ex) {
-            System.out.printf("Could not save game data: %s\n", ex.getMessage());
+            System.out.printf("Could not save game data: %s\n\n", ex.getMessage());
+            consolePause();
+            System.out.println();
         }
     }
 
@@ -222,7 +227,9 @@ public class Utils {
                     .parse(reader.lines().collect(Collectors.joining()))));
         }
         catch (IllegalArgumentException | ClassCastException | IOException | ParseException ex) {
-            System.out.printf("Could not load game data: %s\n", ex.getMessage());
+            System.out.printf("Could not load game data: %s\n\n", ex.getMessage());
+            consolePause();
+            System.out.println();
             return null;
         }
     }

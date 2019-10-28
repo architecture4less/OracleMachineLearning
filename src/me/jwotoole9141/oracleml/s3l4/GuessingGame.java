@@ -8,9 +8,6 @@
  * of the AI with ML in Java Oracle iLearning Course.
  *
  * Defines the driver class of the game.
- *
- * - console pause code from: https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
- * - console clear code from: https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
  */
 
 package me.jwotoole9141.oracleml.s3l4;
@@ -48,7 +45,6 @@ public class GuessingGame {
         // print a goodbye message...
         Utils.clearScreen();
         System.out.println("\nGoodbye!\n");
-        Utils.consolePause();
     }
 
     /**
@@ -139,7 +135,7 @@ public class GuessingGame {
 
         // print that a game is being created...
         Utils.clearScreen();
-        System.out.println("Creating a new game...");
+        System.out.println("\nCreating a new game...");
 
         // prompt user for game's theme (non-plural)...
         System.out.println("\nWhat is the theme of this game?");
@@ -213,6 +209,16 @@ public class GuessingGame {
     private @Nullable Question question;
     private int round;
 
+    /**
+     * Creates a new guessing game with the specified save file.
+     *
+     * <p>
+     * The game's decision tree is loaded from file during construction.
+     * If it couldn't be loaded, the game's tree will be null.
+     * </p>
+     *
+     * @param saveFile the file to contain the game's decision tree
+     */
     public GuessingGame(@NotNull File saveFile) {
 
         this.file = saveFile;
@@ -225,18 +231,38 @@ public class GuessingGame {
         this.round = 0;
     }
 
+    /**
+     * Gets the game's save file.
+     *
+     * @return the save file
+     */
     public @NotNull File getFile() {
         return file;
     }
 
+    /**
+     * Gets the singular form of the game's theme.
+     *
+     * @return the singular word or phrase
+     */
     public @NotNull String getName() {
         return name;
     }
 
+    /**
+     * Gets the game's theme.
+     *
+     * @return a plural word or phrase
+     */
     public @NotNull String getTheme() {
         return theme;
     }
 
+    /**
+     * Gets the game's decision tree.
+     *
+     * @return the game's decision tree, if it exists, else null
+     */
     public @Nullable DecisionTree getTree() {
         return tree;
     }
@@ -294,7 +320,7 @@ public class GuessingGame {
                         Utils.clearScreen();
 
                         // print game data...
-                        System.out.printf("\nThe %s Guessing Game has %d question(s):\n\n", name, size);
+                        System.out.printf("\nThe %s Guessing Game has %d question(s):\n\n", theme, size);
                         System.out.println((!diagram.isEmpty()) ? diagram : "(nothing to display...)");
 
                         Utils.consolePause();
@@ -312,6 +338,10 @@ public class GuessingGame {
 
     /**
      * Plays the game until the user quits.
+     *
+     * <p>
+     * Will immediately return if the game's tree is null.
+     * </p>
      */
     public void play() {
 
@@ -331,7 +361,17 @@ public class GuessingGame {
 
             // show round number...
             Utils.clearScreen();
-            System.out.printf("\n\nRound %d\n\n", round);
+            System.out.printf("\nThe '%s' Guessing Game\n\n", theme);
+            System.out.printf("Round %d\n\n", round);
+
+            // show the computer's summary of knowledge about the answer...
+            System.out.printf("%s...\n", Utils.sentenceCase(answers.stream()
+                    .map(prevQA -> {
+                        Question question = prevQA.getValue0();
+                        Boolean answer = prevQA.getValue1();
+                        return question.getAnswer(answer, "it");
+                    })
+                    .collect(Collectors.joining(", "))));
 
             // if the current question is null...
             if (question == null) {
@@ -340,11 +380,9 @@ public class GuessingGame {
                 cpuForfeit();
                 break;
             }
-            // show the current question's prompt...
-            System.out.printf("%s...\n\n", Utils.sentenceCase(answers.stream()
-                    .map(prevQA -> prevQA.getValue0().getStatement("it", prevQA.getValue1()))
-                    .collect(Collectors.joining(", "))));
 
+            // show the current question's prompt...
+            System.out.println();
             System.out.println(question.getPrompt());
 
             // show the user's choices...
@@ -426,6 +464,11 @@ public class GuessingGame {
     /**
      * Has the user tell the CPU their answer and possibly
      * something to differentiate that answer from the others.
+     *
+     * <p>
+     * Will immediately return if the game's tree is null.
+     * The answer list should not contain any pairs with final questions.
+     * </p>
      */
     public void teachCpu() {
 
@@ -435,9 +478,8 @@ public class GuessingGame {
         for (Pair<Question, Boolean> prevQA : answers) {
             if (prevQA.getValue0().isLast()) {
 
-                // exceptional condition...
                 System.out.print("Huh. The game should have ended already... ");
-                System.out.printf("The answer was a(n) %s.\n\n", prevQA.getValue0().getSubject());
+                System.out.printf("The answer was '%s'.\n\n", prevQA.getValue0().getSubject());
                 System.out.println("There are no questions to ask.\n");
                 return;
             }
@@ -458,7 +500,6 @@ public class GuessingGame {
             response = Utils.INPUT.nextLine().trim();
         }
         String subject = response;
-        String subjectPlural = Utils.pluralized(subject);
 
         // create a new final question...
         Question newFinalQuestion = new Question(Relation.ANSWER, subject);
@@ -468,31 +509,45 @@ public class GuessingGame {
 
             // if there was a previous, non-final question...
             if (!answers.isEmpty()) {
+
                 Pair<Question, Boolean> prevQA = answers.get(answers.size() - 1);
+                Question prevQuestion = prevQA.getValue0();
+                Boolean prevAnswer = prevQA.getValue1();
 
                 // add the new final question as an answer...
-                prevQA.getValue0().setAnswer(prevQA.getValue1(), newFinalQuestion);
+                prevQuestion.setYesOrNo(prevAnswer, newFinalQuestion);
             }
             // else, set the root question...
             else {
                 tree.setRoot(newFinalQuestion);
             }
+            System.out.println("\nOkay. Got it.");
         }
         // else, if this was the final question...
         else if (question.isLast()) {
 
             // computer asks what makes this subject unique...
             Utils.clearScreen();
+            System.out.printf("\nThe '%s' Guessing Game\n\n", theme);
+            System.out.printf("Round %d\n", round);
+
             String computerGuess = question.getSubject();
             if (answers.isEmpty()) {
                 System.out.printf("\nSo, what makes '%s' different from '%s'?\n",
                         subject, computerGuess);
             }
             else {
-                System.out.printf("\nSo, %s, but what makes it different from '%s'?\n",
-                        answers.get(0).getValue0().getStatement("'" + subject + "'")
-                        + answers.subList(1, answers.size() - 1).stream()
-                                .map(qa -> qa.getValue0().getStatement("it"))
+                Question firstQuestion = answers.get(0).getValue0();
+                Boolean firstAnswer = answers.get(0).getValue1();
+                System.out.printf("\nSo, %s.\n\nBut, what makes it different from '%s'?\n",
+                        firstQuestion.getAnswer(firstAnswer, "'" + subject + "'")
+                                + ((answers.size() > 2) ? ", " : "")
+                                + answers.subList(1, answers.size()).stream()
+                                .map(prevQA -> {
+                                    Question question = prevQA.getValue0();
+                                    Boolean answer = prevQA.getValue1();
+                                    return question.getAnswer(answer, "it");
+                                })
                                 .collect(Collectors.joining(", ")),
                         computerGuess);
             }
@@ -506,7 +561,6 @@ public class GuessingGame {
             System.out.println("  it can/cant X            e.g. it can go real fast / cant make noise");
             System.out.println();
 
-            // initialize the relation type and subject...
             Pair<Relation, String> parsedResponse;
             Relation parsedRelation;
             String parsedSubject;
@@ -543,38 +597,47 @@ public class GuessingGame {
             }
 
             // create question from the response...
-            Question newQuestion = new Question(parsedRelation, parsedSubject);
-            boolean newAnswer = newQuestion.getRelation().isPositive();
+            Relation trueRelation = parsedRelation.toForm(true);
+            Question newQuestion = new Question(trueRelation, parsedSubject);
+            boolean newAnswer = parsedRelation.isTrueForm();
 
             // set the new question's answer to the new final question...
-            newQuestion.setAnswer(newAnswer, newFinalQuestion);
+            newQuestion.setYesOrNo(newAnswer, newFinalQuestion);
 
             // if there was a previous, non-final question...
             if (!answers.isEmpty()) {
+
                 Pair<Question, Boolean> prevQA = answers.get(answers.size() - 1);
+                Question prevQuestion = prevQA.getValue0();
+                Boolean prevAnswer = prevQA.getValue1();
 
                 // insert between these two questions...
-                prevQA.getValue0().setAnswer(prevQA.getValue1(), newQuestion);
+                prevQuestion.setYesOrNo(prevAnswer, newQuestion);
             }
             // else, insert above the root question...
             else {
-                newQuestion.setAnswer(!newAnswer, tree.getRoot());
+                newQuestion.setYesOrNo(!newAnswer, tree.getRoot());
                 tree.setRoot(newQuestion);
             }
 
             // print confirmation of new question...
-            System.out.printf("\nAh, so %s.\n", newQuestion.getStatement(subject));
+            System.out.printf("\nAh, so %s.\n", parsedRelation.getStatement(subject, newQuestion.getSubject()));
         }
         // else, something strange happened...
         else {
             System.out.println("I could have kept going. I'm not sure why I gave up...");
         }
 
+        System.out.println();
         Utils.consolePause();
     }
 
     /**
      * Saves the game's decision tree to file.
+     *
+     * <p>
+     * Will immediately return if the game's tree is null.
+     * </p>
      */
     public void save() {
 
