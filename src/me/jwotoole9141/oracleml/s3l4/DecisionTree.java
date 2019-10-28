@@ -43,16 +43,16 @@ public class DecisionTree {
     }
 
     public @NotNull String getDiagram() {
-        return (root == null) ? "" : getDiagram(root, "", "   ", "---");
+        return (root == null) ? "" : getDiagram(root, "", "   ", "-->");
     }
 
     private @NotNull String getDiagram(
             @NotNull Question node, @NotNull String prefix,
             @NotNull String extra, @NotNull String symbol) {
 
-        return (prefix + "\\-" + symbol + "-" + node.getPrompt() + "\n")
-                + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|  ", "(Y)"))
-                + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "   ", "(N)"));
+        return (prefix + "\\-" + symbol + " " + node.getPrompt() + "\n")
+                + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|  ", "Y->"))
+                + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "   ", "N->"));
     }
 
     public @NotNull Map<String, Object> toMap() {
