@@ -48,20 +48,23 @@ public class DecisionTree {
 
     private @NotNull String getDiagram(
             @NotNull Question node, @NotNull String prefix,
-            @NotNull String extra, @NotNull String symbol
-    ) {
+            @NotNull String extra, @NotNull String symbol) {
+
         return (prefix + "\\-" + symbol + "-" + node.getPrompt() + "\n")
                 + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|  ", "(Y)"))
                 + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "   ", "(N)"));
     }
 
     public @NotNull Map<String, Object> toMap() {
+
         Map<String, Object> map = new HashMap<>();
         map.put("tree", (root != null) ? (root.toMap()) : null);
         return map;
     }
 
-    public static @NotNull DecisionTree fromMap(@Nullable Map<?, ?> map) throws ClassCastException {
+    public static @NotNull DecisionTree fromMap(@Nullable Map<?, ?> map)
+            throws IllegalArgumentException, ClassCastException {
+
         if (map == null) {
             return new DecisionTree(null);
         }
