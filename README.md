@@ -168,10 +168,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   - 3-4 Yes/No Game
     - [X] Describe the use of decision trees
       > Decision trees are useful for building a branching network of sequential questions and answers. A few examples are a technical troubleshooting guide or a medical diagnosis.
-    - [ ] Create a yes/no game
+    - [X] Create a yes/no game
       > [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)
     - [X] State the problems of creating a manual decision tree
-      > The main problem with creating a manual decision tree is information entropy. An answer might take a large number of questions to reach. But, if the tree were to be re-ordered with a good decision tree algorithm, it may take significantly fewer questions. Manually determining the most significant question to ask first for a sample of data is difficult.
+      > The main problem with creating a manual decision tree is that an answer might take a large number of questions to reach. But, if the tree were to be re-ordered with a good decision tree algorithm, it may take significantly fewer questions. Manually determining the most significant question to ask first for a sample of data is difficult.
 
 ## Week 7
 > **Sunday, Nov 3rd, 2019**
