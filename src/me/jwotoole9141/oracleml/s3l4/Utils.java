@@ -117,8 +117,11 @@ public class Utils {
         else if (word.endsWith("y")) {
             return word.substring(0, word.length() - 1) + "ies";
         }
-        else {
+        else if (!word.isEmpty()) {
             return word + "s";
+        }
+        else {
+            return word;
         }
     }
 
@@ -126,14 +129,26 @@ public class Utils {
      * Capitalizes the first letter of each word in the given phrase.
      *
      * @param phrase the word or phrase
-     * @return the capitalized version
+     * @return the title-cased version
      */
-    public static @NotNull String capitalized(@NotNull String phrase) {
+    public static @NotNull String titleCase(@NotNull String phrase) {
 
-        return Arrays.stream(phrase.split(" ")).map(
+        return phrase.isEmpty() ? phrase : Arrays.stream(phrase.split(" ")).map(
                 word -> (word.substring(0, 1).toUpperCase()
                         + word.substring(1).toLowerCase() + " ")
         ).collect(Collectors.joining());
+    }
+
+    /**
+     * Capitalizes the first letter of the given sentence.
+     *
+     * @param sentence the sentence
+     * @return the sentence-cased version
+     */
+    public static @NotNull String sentenceCase(@NotNull String sentence) {
+
+        return sentence.isEmpty() ? sentence : sentence.substring(0, 1)
+                .toUpperCase() + sentence.substring(1);
     }
 
     /**
