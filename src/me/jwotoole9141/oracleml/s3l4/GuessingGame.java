@@ -9,21 +9,18 @@
  *
  * Defines the driver class of the game.
  *
- * - code to do a console pause from: https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
- * - code to do a console clear from: https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
+ * - console pause code from: https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
+ * - console clear code from: https://stackoverflow.com/questions/2979383/java-clear-the-console#33379766
  */
 
 package me.jwotoole9141.oracleml.s3l4;
 
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A yes/no guessing game console app.
@@ -32,44 +29,43 @@ import java.util.stream.Collectors;
  */
 public class GuessingGame {
 
-    public static final Scanner INPUT = new Scanner(System.in);
-
     /**
-     * Run the guessing game through the console.
+     * Runs the guessing game through the console.
      *
      * @param args unused command line args
      */
     public static void main(String[] args) {
 
         // print a welcome message...
-        clearScreen();
+        Utils.clearScreen();
         System.out.println("\nWelcome to the guessing game!\n");
-        consolePause();
+        Utils.consolePause();
 
         // run the main menu...
         doMainMenu();
 
         // print a goodbye message...
-        clearScreen();
+        Utils.clearScreen();
         System.out.println("\nGoodbye!\n");
-        consolePause();
+        Utils.consolePause();
     }
 
     /**
-     * Run the game's main menu until the user quits.
+     * Runs the game's main menu until the user quits.
      */
     public static void doMainMenu() {
 
         loopMainMenu:
         while (true) {
 
-            clearScreen();
+            Utils.clearScreen();
 
             // initialize list of user response choices...
-            Map<String, File> choices = new HashMap<>();
+            List<String> choices = new ArrayList<>();
+            Map<String, File> gameChoices = new HashMap<>();
 
             // if saved games are found...
-            List<File> gameFiles = findGames(getDirectory());
+            List<File> gameFiles = Utils.findGames(Utils.curDirectory());
             if (gameFiles.size() > 0) {
 
                 // print that the user should choose a game...
@@ -80,10 +76,12 @@ public class GuessingGame {
                 for (File gameFile : gameFiles) {
 
                     // add it to the list of choices...
-                    choices.put(String.valueOf(choiceIdx), gameFile);
+                    String key = String.valueOf(choiceIdx);
+                    gameChoices.put(key, gameFile);
+                    choices.add(key);
 
                     // print out the choice...
-                    String theme = pluralized(toDisplayName(gameFile.getName()));
+                    String theme = Utils.pluralized(Utils.toDisplayName(gameFile.getName()));
                     System.out.printf("  [%d] %s%n", choiceIdx, theme);
                     choiceIdx++;
                 }
@@ -96,22 +94,22 @@ public class GuessingGame {
 
             // create a choice to create a new game...
             System.out.println("  [n] new game");
-            choices.put("n", null);
+            choices.add("n");
 
             // create a choice to quit...
             System.out.println("  [q] quit");
-            choices.put("q", null);
+            choices.add("q");
 
             // initialize user response...
             String response = "";
             System.out.println();
 
             // while response is insufficient...
-            while (!choices.containsKey(response)) {
+            while (!choices.contains(response)) {
 
                 // get user response...
                 System.out.print(">>> ");
-                response = INPUT.nextLine().trim().substring(0, 1);
+                response = Utils.INPUT.nextLine().trim().substring(0, 1);
             }
 
             switch (response) {
@@ -127,25 +125,27 @@ public class GuessingGame {
 
                 // else, the user chose to view a game...
                 default:
-                    doViewGame(choices.get(response));
+                    new GuessingGame(gameChoices.get(response)).view();
                     break;
             }
         }
     }
 
     /**
-     * Run the game creation menu until success or the user quits.
+     * Runs the game creation menu until success or the user quits.
      */
     public static void doCreateGame() {
 
         // print that a game is being created...
-        clearScreen();
+        Utils.clearScreen();
         System.out.println("Creating a new game...");
 
         // prompt user for game's theme (non-plural)...
         System.out.println("\nWhat is the theme of this game?");
         System.out.println("(Use a non-plural word or phrase)");
         System.out.println("(Use 'q' to go back)\n");
+
+        GuessingGame game = null;
 
         while (true) {
 
@@ -157,7 +157,7 @@ public class GuessingGame {
 
                 // get user response...
                 System.out.print(">>> ");
-                response = INPUT.nextLine().trim();
+                response = Utils.INPUT.nextLine().trim();
             }
 
             // if response is 'q', break the loop...
@@ -166,7 +166,7 @@ public class GuessingGame {
             }
 
             // create a file name for the chosen theme...
-            String gameFileName = toFileName(response);
+            String gameFileName = Utils.toFileName(response);
             File gameFile = new File(gameFileName);
 
             // make sure it doesn't exist yet...
@@ -185,7 +185,7 @@ public class GuessingGame {
 
                 // print error and break the loop...
                 System.out.printf("Unable to create new game with file %s...\n\n", ex.getMessage());
-                consolePause();
+                Utils.consolePause();
                 break;
             }
 
@@ -194,26 +194,66 @@ public class GuessingGame {
 
                 // print that the new game has been created...
                 System.out.println("Successfully created the new game!\n");
-                consolePause();
+                Utils.consolePause();
 
                 // view the new game...
-                doViewGame(gameFile);
+                new GuessingGame(gameFile).view();
                 break;
             }
         }
     }
 
+    private @NotNull File file;
+    private @NotNull String name;
+    private @NotNull String theme;
+    private @Nullable DecisionTree tree;
+
+    private @NotNull List<Question> path;
+    private @Nullable Question question;
+    private int round;
+
+    public GuessingGame(@NotNull File saveFile) {
+
+        this.file = saveFile;
+        this.name = Utils.toDisplayName(saveFile.getName());
+        this.theme = Utils.pluralized(name);
+        this.tree = Utils.loadTree(saveFile);
+
+        this.path = new LinkedList<>();
+        this.question = null;
+        this.round = 0;
+    }
+
+    public @NotNull File getFile() {
+        return file;
+    }
+
+    public @NotNull String getName() {
+        return name;
+    }
+
+    public @NotNull String getTheme() {
+        return theme;
+    }
+
+    public @Nullable DecisionTree getTree() {
+        return tree;
+    }
+
     /**
-     * View a game until the user quits.
+     * Views the game until the user quits.
      *
-     * @param gameFile the data for the game
+     * <p>
+     * The user has the options to view the game's tree structure and to play the game.
+     * Playing the game in this way immediately saves any changes back to file afterwards.
+     * </p>
      */
-    public static void doViewGame(@NotNull File gameFile) {
+    public void view() {
 
         loopViewGame:
         while (true) {
 
-            clearScreen();
+            Utils.clearScreen();
 
             // display game options...
             System.out.println("\nWhat do you wish to do?\n");
@@ -231,7 +271,7 @@ public class GuessingGame {
 
                 // get user response...
                 System.out.print(">>> ");
-                response = INPUT.nextLine().trim().substring(0, 1);
+                response = Utils.INPUT.nextLine().trim().substring(0, 1);
             }
 
             switch (response) {
@@ -244,54 +284,45 @@ public class GuessingGame {
                 case "d":
 
                     // if the game could be loaded...
-                    DecisionTree tree = loadTree(gameFile);
                     if (tree != null) {
 
                         // get game data...
                         int size = tree.getSize();
                         String diagram = tree.getDiagram();
-                        String theme = toDisplayName(gameFile.getName());
 
-                        clearScreen();
+                        Utils.clearScreen();
 
                         // print game data...
-                        System.out.printf("The %s Guessing Game has %d question(s):\n", theme, size);
+                        System.out.printf("The %s Guessing Game has %d question(s):\n", name, size);
                         System.out.println((!diagram.isEmpty()) ? diagram : "(nothing to display...)");
 
-                        consolePause();
+                        Utils.consolePause();
                     }
                     break;
 
                 // the user chose to play the game...
                 case "p":
-                    doPlayGame(gameFile);
+                    play();
+                    save();
                     break loopViewGame;
             }
         }
     }
 
     /**
-     * Play a game until the user quits.
-     *
-     * @param gameFile the data for the game
+     * Plays the game until the user quits.
      */
-    public static void doPlayGame(@NotNull File gameFile) {
-
-        // try to load the game...
-        DecisionTree tree = loadTree(gameFile);
+    public void play() {
 
         // if the game couldn't be loaded, return...
         if (tree == null) {
             return;
         }
 
-        // get the game's theme for reference...
-        String theme = toDisplayName(gameFile.getName());
-
-        // initialize the question and round number...
-        Question prevQuestion = null;
-        Question question = tree.getRoot();
-        int round = 0;
+        // initialize the question, path, and round number...
+        path.clear();
+        question = tree.getRoot();
+        round = 0;
 
         // play rounds...
         loopPlayGame:
@@ -303,8 +334,8 @@ public class GuessingGame {
             // if the current question is null...
             if (question == null) {
 
-                // the computer lost...
-                doComputerLost(theme, tree, prevQuestion);
+                // the computer must forfeit...
+                cpuForfeit();
                 break;
             }
             // show the current question's prompt...
@@ -322,7 +353,7 @@ public class GuessingGame {
 
                 // get user response...
                 System.out.print(">>> ");
-                response = INPUT.nextLine().trim().substring(0, 1);
+                response = Utils.INPUT.nextLine().trim().substring(0, 1);
             }
             switch (response) {
 
@@ -334,46 +365,43 @@ public class GuessingGame {
                 case "y":
                     // if this is the last question, computer won...
                     if (question.isLast()) {
-                        doComputerWon();
+                        cpuWon();
                         break loopPlayGame;
                     }
                     // else, go to the next question...
-                    else {
-                        prevQuestion = question;
-                        question = question.getYes();
-                        break;
-                    }
+                    path.add(question);
+                    question = question.getYes();
+                    break;
 
-                    // the user answered no...
+                // the user answered no...
                 case "n":
                     // if this is the last question, computer lost...
                     if (question.isLast()) {
-                        doComputerLost(theme, tree, question);
+                        cpuLost();
                         break loopPlayGame;
                     }
                     // else, go to the next question...
-                    else {
-                        prevQuestion = question;
-                        question = question.getYes();
-                        break;
-                    }
+                    path.add(question);
+                    question = question.getNo();
+                    break;
             }
             // increment round number...
             round++;
         }
-
-        // save the game...
-        saveTree(tree, gameFile);
     }
 
-    public static void doComputerWon() {
+    public void cpuWon() {
 
-        System.out.println("\nI won!\n");
+        System.out.println("\nThe computer wins.\n");
     }
 
-    public static void doComputerLost(@NotNull String theme, @NotNull DecisionTree tree, @Nullable Question question) {
+    public void cpuForfeit() {
 
-        String themePlural = pluralized(theme);
+    }
+
+    public void cpuLost() {
+
+        String themePlural = Utils.pluralized(theme);
 
         // print computer lost message...
         System.out.println("\nI give up... what was the answer?");
@@ -387,207 +415,82 @@ public class GuessingGame {
 
             // get user response...
             System.out.print(">>> ");
-            response = INPUT.nextLine().trim();
+            response = Utils.INPUT.nextLine().trim();
         }
+        String answer = response;
+        String answerPlural = Utils.pluralized(answer);
 
         // if there was no question to begin with...
         if (question == null) {
 
-            System.out.printf("\nSo, tell me something about %s...\n", themePlural);
-        }
-        else if (question.isLast()) {
             // computer asks what makes this answer unique...
-            System.out.println("So, what makes a %s different from a %s?");
+            System.out.printf("\nSo, tell me something about %s...\n", answerPlural);
+        }
+        // if this was the last question...
+        else if (question.isLast()) {
+
+            // computer asks what makes this answer different from its own guess...
+            String computerGuess = question.getSubject();
+            System.out.printf("\nSo, what makes a %s different from a %s?\n", answer, computerGuess);
         }
         else {
+            System.out.println("I could have kept going. I'm not sure why I gave up...");
+            return;
+        }
+
+        // tell user how response should be structured...
+        System.out.println("(describe using one of the following relationships)");
+        System.out.println();
+        System.out.println("  it is/isnt a type of X       e.g. it is a type of vehicle");
+        System.out.println("  it is/isnt X                 e.g. it is metallic");
+        System.out.println("  it has/hasnt/doesnt have X   e.g. it has four wheels");
+        System.out.println("  it can/cant/does/doesnt X    e.g. it can go real fast");
+        System.out.println();
+
+        // initialize the relation type and subject...
+        Pair<Pair<Relation, Boolean>, String> relationSubject;
+
+        // while response is insufficient...
+        while (true) {
+
+            // get user response...
+            System.out.print(">>> ");
+            response = Utils.INPUT.nextLine().trim();
+
+            // if there is a response...
+            if (!response.isEmpty()) {
+
+                // parse the relation type and subject...
+                relationSubject = Relation.parse(response);
+
+                // check if the response was sufficient...
+                if (relationSubject != null) {
+                    break;
+                }
+            }
+        }
+
+        // create question from the response...
+        Question newQuestion = new Question(relationSubject.getKey().getKey(), relationSubject.getValue(), false);
+
+        // if there was a last question...
+        if (question != null) {
 
         }
 
-        // get response from user...
-
-        // create question from the response...
+        // print confirmation of new question...
+        System.out.printf("Ah, so %s\n", (Object) null);
 
         // add question to the tree...
     }
 
     /**
-     * Clear all text from the console.
+     * Saves the game's decision tree to file.
      */
-    public static void clearScreen() {
-        try {
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-        }
-        catch (InterruptedException | IOException ignored) {
+    public void save() {
 
-        }
-    }
-
-    /**
-     * Tell the user to press any key to continue.
-     */
-    public static void consolePause() {
-        try {
-            new ProcessBuilder("cmd", "/c", "pause").inheritIO().start().waitFor();
-        }
-        catch (InterruptedException | IOException ignored) {
-
-        }
-    }
-
-    /**
-     * Get the directory that this program is running from.
-     *
-     * @return the folder if it is valid, else null
-     */
-    public static @NotNull File getDirectory() {
-
-        return new File(new File("").getAbsolutePath());
-    }
-
-    /**
-     * Get a list of json files in the given directory.
-     *
-     * @return json files that represent serialized games
-     */
-    public static @NotNull List<File> findGames(@Nullable File directory) {
-
-        List<File> results = new ArrayList<>();
-        if (directory == null) {
-            return results;
-        }
-        File[] dirFiles = directory.listFiles();
-        if (dirFiles != null) {
-            for (File dirFile : dirFiles) {
-                if (dirFile.isFile()) {
-                    if (dirFile.getName().endsWith("json")) {
-                        results.add(dirFile);
-                    }
-                }
-            }
-        }
-        return results;
-    }
-
-    /**
-     * Apply simple grammar rules to create a pluralized version of the given word.
-     * <br /><br />
-     * <p>
-     * Here is an example of each rule taken into consideration:
-     *   <ul>
-     *     <li>Cactus -> Cacti</li>
-     *     <li>Compass -> Compasses</li>
-     *     <li>Fish -> Fishes</li>
-     *     <li>Money -> Monies</li>
-     *     <li>Pillow -> Pillows</li>
-     *   </ul>
-     * </p>
-     *
-     * @param word a word to pluralize
-     * @return the pluralized word
-     */
-    public static @NotNull String pluralized(@NotNull String word) {
-
-        if (word.endsWith("us")) {
-            return word.substring(0, word.length() - 2) + "i";
-        }
-        else if (word.endsWith("s") || word.endsWith("sh")) {
-            return word + "es";
-        }
-        else if (word.endsWith("y")) {
-            return word.substring(0, word.length() - 1) + "ies";
-        }
-        else {
-            return word + "s";
-        }
-    }
-
-    /**
-     * Capitalize the first letter of each word in the given phrase.
-     *
-     * @param phrase the word or phrase
-     * @return the capitalized version
-     */
-    public static @NotNull String capitalized(@NotNull String phrase) {
-
-        return Arrays.stream(phrase.split(" ")).map(
-                word -> (word.substring(0, 1).toUpperCase()
-                        + word.substring(1).toLowerCase() + " ")
-        ).collect(Collectors.joining());
-    }
-
-    /**
-     * Convert a game's name in file-name format to display-name format.
-     *
-     * <p>
-     * The display name uses spaces instead of underscores, capitalizes the
-     * first letter of each word, and does not include the file name extension.
-     * </p>
-     *
-     * @param fileName the game's file name
-     * @return the game's display name
-     */
-    public static @NotNull String toDisplayName(@NotNull String fileName) {
-
-        // remove the potential file extension...
-        int extIdx = fileName.lastIndexOf('.');
-        fileName = (extIdx <= 0) ? fileName : fileName.substring(0, extIdx);
-
-        // convert underscores to spaces and capitalize each word...
-        return Arrays.stream(fileName.split("_")).map(
-                word -> word.substring(0, 1).toUpperCase()
-                        + word.substring(1).toLowerCase()
-
-        ).collect(Collectors.joining(" ")).trim();
-    }
-
-    /**
-     * Convert a game's name in display-name format to file-name format.
-     *
-     * <p>
-     * The file name uses all lowercase, underscores instead of spaces,
-     * and includes the json file name extension.
-     * </p>
-     *
-     * @param displayName the game's display name
-     * @return the game's file name
-     */
-    public static @NotNull String toFileName(@NotNull String displayName) {
-
-        // convert spaces to underscores, set everything lowercase, and add an underscore...
-        return String.join("_", displayName.toLowerCase().split(" ")).trim() + ".json";
-    }
-
-    /**
-     * Save a game to its file.
-     *
-     * @param tree the game's decision tree
-     * @param file the game's file
-     */
-    public static void saveTree(@NotNull DecisionTree tree, @NotNull File file) {
-
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(new JSONObject(tree.toMap()).toJSONString());
-        }
-        catch (IOException ex) {
-            System.out.printf("Could not save game data: %s\n", ex.getMessage());
-        }
-    }
-
-    /**
-     * Load a game from its file.
-     *
-     * @param file the game file to load
-     * @return the game's decision tree
-     */
-    public static @Nullable DecisionTree loadTree(@NotNull File file) {
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return DecisionTree.fromMap(((Map<?, ?>) new JSONParser()
-                    .parse(reader.lines().collect(Collectors.joining()))));
-        }
-        catch (ClassCastException | IOException | ParseException ex) {
-            System.out.printf("Could not load game data: %s\n", ex.getMessage());
-            return null;
+        if (tree != null) {
+            Utils.saveTree(tree, file);
         }
     }
 }
