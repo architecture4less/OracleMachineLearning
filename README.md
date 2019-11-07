@@ -16,10 +16,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - [X] [Week 1](#week-1)
 - [X] [Week 2](#week-2)
 - [X] [Week 3](#week-3)
-- [ ] [Week 4](#week-4,-5,-6)
+- [X] [Week 4](#week-4,-5,-6)
 - [ ] [Week 7](#week-7)
-- [ ] [Week 8](#week-8,-9)
-- [ ] [Week 9](#week-10,-11)
+- [ ] [Week 8](#week-8,-9,-10)
+- [ ] [Week 9](#week-11)
 ---
 
 ## Week 0
@@ -195,9 +195,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Calculate gain
     - [ ] Manually work through the ID3 algorithm
 
-## Week 8, 9
+## Week 8, 9, 10
 > **Sunday, Nov 10th, 2019** 
 > **Sunday, Nov 17th, 2019** 
+> **Sunday, Nov 24th, 2019** 
 
 - Section 4 – Entropy and the ID3 Algorithm
 
@@ -205,8 +206,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Understand non binary tree structure
     - [ ] Create a non-binary tree structure
 
-## Week 10, 11
-> **Sunday, Nov 24th, 2019** 
+## Week 11
 > **Sunday, Dec 1st, 2019** 
 
 - [ ] Complete Section 3 & 4 Quiz
