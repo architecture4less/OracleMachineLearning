@@ -148,8 +148,8 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
       > In in-order traversal, the node's left child is traversed (if it exists), then the node's data is gathered, and then the node's right child is traversed (if it exists).
     - [X] Create methods for BTree
       > **Task 1**  
-        [* BNode](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
-        [* NodeDriver.java](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
+        [* BNode.java](src/me/jwotoole9141/oracleml/s3l3t1/BNode.java)  
+        [* NodeDriver.java](src/me/jwotoole9141/oracleml/s3l3t1/NodeDriver.java)  
         [* Output of NodeDriver.main()](media/output_s3l3t1_node_driver.png)  
         **Task 2**  
         [* BNode.java](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
