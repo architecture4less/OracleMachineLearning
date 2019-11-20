@@ -159,9 +159,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 
 
 ## Week 4, 5, 6
-> **Sunday, Oct 13th, 2019** 
-> **Sunday, Oct 20th, 2019** 
-> **Sunday, Oct 27th, 2019** 
+> **Sunday, Oct 13th, 2019**  
+> **Sunday, Oct 20th, 2019**  
+> **Sunday, Oct 27th, 2019**  
 
 - Section 3 – Trees and Recursion
     
@@ -196,9 +196,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Manually work through the ID3 algorithm
 
 ## Week 8, 9, 10
-> **Sunday, Nov 10th, 2019** 
-> **Sunday, Nov 17th, 2019** 
-> **Sunday, Nov 24th, 2019** 
+> **Sunday, Nov 10th, 2019**  
+> **Sunday, Nov 17th, 2019**  
+> **Sunday, Nov 24th, 2019**  
 
 - Section 4 – Entropy and the ID3 Algorithm
 
@@ -207,7 +207,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [ ] Create a non-binary tree structure
 
 ## Week 11
-> **Sunday, Dec 1st, 2019** 
+> **Sunday, Dec 1st, 2019**  
 
 - [ ] Complete Section 3 & 4 Quiz
 - [ ] Complete AiML Final Exam
