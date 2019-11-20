@@ -196,8 +196,8 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
       > Variance is a mathematical measure of how spread out a data set is. The information entropy of a data set is measured by its variance. 
     - [X] Calculate information entropy
       > `info_entropy(D)` is calculated using the formula:  
-        ```sum([-px * log(px) / log(2) for px in D])```
-        with the data set `D` and probability of success `px`
+        ```sum([-px * log(px) / log(2) for px in D])```  
+        with the data set `D` and probability of success `px`. 
     - [X] Understand information entropy
       > Information entropy allows us to evaluate the most efficient order of questions to ask to make an accurate prediction about a data set.
     
@@ -207,9 +207,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
         ``` (-px * log(px) / log(2)) + (-pk * log(pk) / log(2)) ```  
         with the system `S`, probability of success `px`, and probability of failure `pk`. 
     - [X] Calculate gain
-      > `gain(S, A)` is calculated using the formula:
-        ``` entropy(S) - sum((len(O)/len(S)) * entropy(O) for O in A) ```
-        with the system `S`, attribute `A`, and outcome of an attribute `O`.
+      > `gain(S, A)` is calculated using the formula:  
+        ``` entropy(S) - sum((len(O)/len(S)) * entropy(O) for O in A) ```  
+        with the system `S`, attribute `A`, and outcome of an attribute `O`. 
     - [X] Manually work through the ID3 algorithm
       > [ID3 Algorithm Manually Worked Through](media/id3_algorithm_worked.pdf)
 
