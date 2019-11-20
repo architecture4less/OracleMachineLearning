@@ -179,21 +179,39 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - Section 4 – Entropy and the ID3 Algorithm
 
   - 4-1 Decision Tree Algorithms
-    - [ ] State a number of decision tree algorithms
-    - [ ] Identify the ID3 algorithm
-    - [ ] Supply arguments to a method
-    - [ ] Return values from a method
+    - [X] State a number of decision tree algorithms
+      > Some examples of decision tree algorithms are:  
+        ~ Classification And Regression Tree (CART)  
+        ~ Iterative Dichotomiser 3 (ID3)  
+        ~ Chi-Squared Automatic Interaction Detection (CHAID)  
+        ~ Decision Stump  
+        ~ Conditional Decision Trees
+    - [X] Identify the ID3 algorithm
+      > The ID3 algorithm is an algorithm to create an efficient decision tree. Each node branches on the attribute whose results produce the greatest variance.
     
   - 4-2 Information Entropy
-    - [ ] Define information entropy
-    - [ ] Understand variance
-    - [ ] Calculate information entropy
-    - [ ] Understand information entropy
+    - [X] Define information entropy
+      > Information entropy is the seeming randomness in a data set, from which information can be extracted. A data set which has no randonmess, in which all of the results can be known ahead of time, has no entropy.  
+    - [X] Understand variance
+      > Variance is a mathematical measure of how spread out a data set is. The information entropy of a data set is measured by its variance. 
+    - [X] Calculate information entropy
+      > `info_entropy(D)` is calculated using the formula:  
+        ```sum([-px * log(px) / log(2) for px in D])```
+        with the data set `D` and probability of success `px`
+    - [X] Understand information entropy
+      > Information entropy allows us to evaluate the most efficient order of questions to ask to make an accurate prediction about a data set.
     
   - 4-3 ID3 Worked Example
-    - [ ] Calculate entropy
-    - [ ] Calculate gain
-    - [ ] Manually work through the ID3 algorithm
+    - [X] Calculate entropy
+      > `entropy(S)` is calculated using the formula:  
+        ``` (-px * log(px) / log(2)) + (-pk * log(pk) / log(2)) ```  
+        with the system `S`, probability of success `px`, and probability of failure `pk`. 
+    - [X] Calculate gain
+      > `gain(S, A)` is calculated using the formula:
+        ``` entropy(S) - sum((len(O)/len(S)) * entropy(O) for O in A) ```
+        with the system `S`, attribute `A`, and outcome of an attribute `O`.
+    - [X] Manually work through the ID3 algorithm
+      > [ID3 Algorithm Manually Worked Through](media/id3_algorithm_worked.pdf)
 
 ## Week 8, 9, 10
 > **Sunday, Nov 10th, 2019**  
