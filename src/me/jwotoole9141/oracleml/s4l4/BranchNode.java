@@ -22,36 +22,39 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 
 /**
- * Represents a branch node in a binary tree.
+ * Represents a branch node in a non-binary tree. Branch nodes have
+ * both a <i>question</i> and a map of children to various <i>answers</i> .
  *
- * @param <Q> The 'question' type for the node's label
- * @param <A> The 'answer' type for the map-keys of the node's children
+ * @param <Q> The <i>question</i> type in this node's heirarchy
+ * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
+ * @see LeafNode
  */
 public class BranchNode<Q, A> extends Node<Q, A> {
 
-    private @NotNull Q label;
-    private @NotNull ObservableMap<@NotNull A, @NotNull Node> children;
+    protected @NotNull Q question;
+    protected @NotNull ObservableMap<@NotNull A, @NotNull Node> children;
 
     /**
-     * Creates a new node with the given label.
+     * Creates a new node with the given <i>question</i>.
      *
-     * @param label the node's 'question'
+     * @param question the premise of the node
      */
-    public BranchNode(@NotNull Q label) {
-        this(label, null);
+    public BranchNode(@NotNull Q question) {
+
+        this(question, null);
     }
 
     /**
-     * Creates a new node with the given label and children.
+     * Creates a new node with the given <i>question</i> and <i>answers</i>.
      *
-     * @param label    the node's 'question'
-     * @param children the node's map of 'answers' to 'follow-up questions'
+     * @param question the premise of the node
+     * @param children a map of <i>answers</i> to <i>follow-up questions</i>
      */
-    public BranchNode(@NotNull Q label, @Nullable Map<@NotNull A, @NotNull Node> children) {
+    public BranchNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node> children) {
 
         super();
-        this.label = label;
+        this.question = question;
         this.children = FXCollections.emptyObservableMap();
 
         // map listener sets or removes the parent reference of child nodes...
@@ -75,22 +78,24 @@ public class BranchNode<Q, A> extends Node<Q, A> {
 
     /**
      * Gets an object that represents the premise for
-     * how to choose an 'answer' from this node.
+     * how to choose an <i>answer</i> from this node.
      *
-     * @return the node's 'question'
+     * @return the node's premise
      */
-    public @NotNull Q getLabel() {
-        return label;
+    public @NotNull Q getQuestion() {
+
+        return question;
     }
 
     /**
      * Gets the children of this node. Child nodes are
-     * accessed by a mapped key that represents the answer
-     * to this node's 'question'.
+     * accessed with a key that represents the <i>answer</i>
+     * to this node's premise.
      *
-     * @return a mapping of 'answers' to sub nodes
+     * @return a mapping of <i>answers</i> to child nodes
      */
     public @NotNull Map<@NotNull A, @NotNull Node> getChildren() {
+
         return children;
     }
 }

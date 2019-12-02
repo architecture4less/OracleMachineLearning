@@ -12,44 +12,50 @@
 
 package me.jwotoole9141.oracleml.s4l4;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- * Represents a leaf node in a binary tree.
+ * Represents a leaf node in a non-binary tree. Leaf nodes
+ * have a <i>final answer</i> to the premise of its tree.
  *
- * @param <Q> The 'question' type for the label of any parent nodes
- * @param <A> The 'answer' type for the node's result
+ * @param <Q> The <i>question</i> type in this node's heirarchy
+ * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
+ * @see BranchNode
  */
 public class LeafNode<Q, A> extends Node<Q, A> {
 
-    private boolean result;
+    protected @NotNull A answer;
 
     /**
-     * Creates a new leaf node with the given result.
+     * Creates a new leaf node with the given <i>answer</i>.
      *
-     * @param result the 'answer' for the entire tree
+     * @param answer the <i>final answer</i> to the premise of the entire tree
      */
-    public LeafNode(boolean result) {
+    public LeafNode(@NotNull A answer) {
         super();
-        this.result = result;
+        this.answer = answer;
     }
 
     /**
-     * Gets the success or failure of this leaf node. This
-     * represents the answer to the premise of the entire tree.
+     * Gets the <i>final answer</i> of this leaf node.
+     * This represents the <i>answer</i> to the premise
+     * of the entire tree.
      *
-     * @return true if this leaf node represents a success, else false
+     * @return the <i>final answer</i>
      */
-    public boolean getResult() {
-        return result;
+    public @NotNull A getAnswer() {
+        return answer;
     }
 
     /**
-     * Sets the result of this leaf node to be
-     * either success or failure.
+     * Sets the <i>final answer</i> of this leaf node.
+     * This represents the <i>answer</i> to the premise
+     * of the entire tree.
      *
-     * @param result true if success, else false
+     * @param answer the <i>final answer</i>
      */
-    public void setResult(boolean result) {
-        this.result = result;
+    public void setAnswer(@NotNull A answer) {
+        this.answer = answer;
     }
 }

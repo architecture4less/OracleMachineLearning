@@ -18,20 +18,18 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.WeakReference;
 
 /**
- * Represents a node in a non-binary tree.
+ * Represents a node in a non-binary tree. It should be cast to
+ * either a {@link BranchNode} or a {@link LeafNode} when using.
  *
- * @param <Q> The 'question' type for the node's label
- * @param <A> The 'answer' type for the map-keys of the node's children
+ * @param <Q> The <i>question</i> type in this node's heirarchy
+ * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
  */
 public abstract class Node<Q, A> {
 
-    protected @NotNull WeakReference<Node> parent;
+    protected @NotNull WeakReference<Node<Q, A>> parent;
 
-    /**
-     * Creates a new node with no parent.
-     */
-    public Node() {
+    protected Node() {
         this.parent = new WeakReference<>(null);
     }
 
@@ -41,7 +39,7 @@ public abstract class Node<Q, A> {
      *
      * @return the parent node or null
      */
-    public @Nullable Node getParent() {
+    public @Nullable Node<Q, A> getParent() {
         return parent.get();
     }
 }
