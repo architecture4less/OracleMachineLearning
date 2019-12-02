@@ -12,7 +12,9 @@
 
 package me.jwotoole9141.oracleml.s4l4;
 
-public class DataTable {
+import java.util.*;
+
+public class DataTable<A extends DataAttr, O extends DataOutcome> {
 
     /*
      * Based on my ID3 pseudocode,
@@ -39,4 +41,35 @@ public class DataTable {
      * DataTable.Result - default 'outcome' implementation using a bool
      *
      */
+
+    private A resultCol;
+    private List<O> resultRows;
+    private Map<DataAttr, List<DataOutcome>> data;
+
+    public A getResultAttr() {
+        return resultCol;
+    }
+
+    public List<O> getResultRows() {
+        return Collections.unmodifiableList(resultRows);
+    }
+
+    public Set<DataAttr> getDataAttrs() {
+        return Collections.unmodifiableSet(data.keySet());
+    }
+
+    public List<DataOutcome> getDataRows(DataAttr attr) {
+        if (!data.containsKey(attr)) {
+            return Collections.unmodifiableList(new ArrayList<>());
+        }
+        return Collections.unmodifiableList(data.get(attr));
+    }
+
+    public DataTable without() {
+        return null;  // TODO
+    }
+
+    public DataTable withOnly() {
+        return null;  // TODO
+    }
 }
