@@ -112,12 +112,13 @@ public class InnerNode<Q, A> extends Node<Q, A> {
                 + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
                 + "--> " + getQuestion().toString() + "\n");
 
-        // TODO finish
+        int i = children.size();
+        String newPrefix = prefix + branch;
 
-         int i = children.size();
-         return (prefix + "\\-->" + getQuestion().toString() + "\n")
-                 + children.entrySet().stream().map(
-                         e -> getDiagram(prefix + branch, i-- == 0 ? "|  " : "  ")); // FIXME
+        for ( Node<Q, A> child : children.values()) {
+            result.append(child.getDiagram(newPrefix, --i == 0 ? "|  " : "  "));
+        }
+        return result.toString();
     }
 
     @Override
