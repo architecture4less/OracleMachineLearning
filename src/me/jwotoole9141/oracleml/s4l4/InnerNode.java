@@ -108,10 +108,11 @@ public class InnerNode<Q, A> extends Node<Q, A> {
     @Override
     protected @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch) {
 
-        // return (prefix + "\\" + symbol + " " + node.getPrompt() + "\n")
-        //         + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|   ", "Y->"))
-        //         + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "    ", "N->"));
-        //
+        StringBuilder result = new StringBuilder(prefix + "\\-"
+                + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
+                + "--> " + getQuestion().toString() + "\n");
+
+        // TODO finish
 
          int i = children.size();
          return (prefix + "\\-->" + getQuestion().toString() + "\n")
