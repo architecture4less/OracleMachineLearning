@@ -106,6 +106,20 @@ public class InnerNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
+    protected @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch) {
+
+        // return (prefix + "\\" + symbol + " " + node.getPrompt() + "\n")
+        //         + ((node.getYes() == null) ? "" : getDiagram(node.getYes(), prefix + extra, "|   ", "Y->"))
+        //         + ((node.getNo() == null) ? "" : getDiagram(node.getNo(), prefix + extra, "    ", "N->"));
+        //
+
+         int i = children.size();
+         return (prefix + "\\-->" + getQuestion().toString() + "\n")
+                 + children.entrySet().stream().map(
+                         e -> getDiagram(prefix + branch, i-- == 0 ? "|  " : "  ")); // FIXME
+    }
+
+    @Override
     public String toString() {
         return String.format("InnerNode[question=%s, answers={%s}]",
                 question.toString(),
