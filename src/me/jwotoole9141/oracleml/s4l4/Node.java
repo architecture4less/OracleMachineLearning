@@ -107,7 +107,7 @@ public abstract class Node<Q, A> {
     /**
      * Creates a node from the given json map.
      *
-     * @param map             a json map
+     * @param mapObj          a json map
      * @param questionFromMap a function that converts a {@link Map} to a(n) {@link Q}
      * @param answerFromStr   a function that converts a {@link String} to a(n) {@link A}
      * @return the node represented by the given json map
@@ -116,12 +116,14 @@ public abstract class Node<Q, A> {
      * @throws IllegalArgumentException invalid or missing value in json map
      */
     public static <Q, A> @NotNull Node<Q, A> fromMap(
-            @Nullable Map<?, ?> map,
+            @Nullable Object mapObj,
             @NotNull Function<Map<?, ?>, Q> questionFromMap,
             @NotNull Function<String, A> answerFromStr)
             throws IllegalArgumentException, ClassCastException {
 
-        if (map != null && !map.isEmpty()) {
+        if ((mapObj instanceof Map<?, ?>)) {
+
+            Map<?, ?> map = (Map<?, ?>) mapObj;
 
             if (map.containsKey("question") && map.containsKey("children")) {
 
@@ -131,7 +133,7 @@ public abstract class Node<Q, A> {
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) map.get("children")).entrySet()) {
                     A answer = answerFromStr.apply(((String) entry.getKey()));
                     Node<Q, A> child = Node.fromMap(
-                            (Map<?, ?>) entry.getValue(), questionFromMap, answerFromStr);
+                            entry.getValue(), questionFromMap, answerFromStr);
 
                     children.put(answer, child);
                 }
