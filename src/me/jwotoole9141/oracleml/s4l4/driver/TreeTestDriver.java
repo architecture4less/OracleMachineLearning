@@ -16,9 +16,12 @@ import me.jwotoole9141.oracleml.s4l4.InnerNode;
 import me.jwotoole9141.oracleml.s4l4.Node;
 import me.jwotoole9141.oracleml.s4l4.OuterNode;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -33,9 +36,9 @@ public class TreeTestDriver {
      *
      * @param args unused command-line args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
-        // functions for converting tree into a json map...
+        // functions for converting between a tree and a json map...
 
         Function<String, Map<String, Object>> questionToMap = q -> {
             Map<String, Object> map = new HashMap<>();
@@ -43,7 +46,7 @@ public class TreeTestDriver {
             return map;
         };
 
-        Function<String, String> answerToStr = a -> a;
+        Function<Map<?, ?>, String> questionFromMap = m -> (String) m.get("value");
 
         // build the tree...
 
@@ -74,7 +77,26 @@ public class TreeTestDriver {
 
         System.out.println("\nTesting tree.toMap()...");
         System.out.println(new JSONObject(tree
-                .toMap(questionToMap, answerToStr))
+                .toMap(questionToMap, Objects::toString))
+                .toJSONString());
+
+        String newTreeJson = "{\"question\":{\"value\":\"Outlook?\"},\"children\":{"
+                + "\"Rainy\":{\"question\":{\"value\":\"Wind?\"},\"children\":{"
+                + "\"Weak\":{\"answer\":\"Yes\"},"
+                + "\"Strong\":{\"answer\":\"No\"}}},"
+                + "\"Overcast\":{\"answer\":\"Yes\"},"
+                + "\"Sunny\":{\"question\":{\"value\":\"Humidity?\"},\"children\":{"
+                + "\"High\":{\"answer\":\"No\"},"
+                + "\"Normal\":{\"answer\":\"Yes\"}}}}}";
+
+        Object newTreeMap = new JSONParser().parse(newTreeJson);
+
+        InnerNode<String, String> newTree =
+                (InnerNode<String, String>) Node.fromMap(newTreeMap, questionFromMap, Object::toString);
+
+        System.out.println("\nTesting Node.fromMap()...");
+        System.out.println(new JSONObject(tree
+                .toMap(questionToMap, Objects::toString))
                 .toJSONString());
     }
 }
