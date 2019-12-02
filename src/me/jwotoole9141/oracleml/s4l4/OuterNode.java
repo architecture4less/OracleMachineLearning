@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
- * @see BranchNode
+ * @see InnerNode
  */
-public class LeafNode<Q, A> extends Node<Q, A> {
+public class OuterNode<Q, A> extends Node<Q, A> {
 
     protected @NotNull A answer;
 
@@ -32,7 +32,7 @@ public class LeafNode<Q, A> extends Node<Q, A> {
      *
      * @param answer the <i>final answer</i> to the premise of the entire tree
      */
-    public LeafNode(@NotNull A answer) {
+    public OuterNode(@NotNull A answer) {
         super();
         this.answer = answer;
     }

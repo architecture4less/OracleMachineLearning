@@ -28,9 +28,9 @@ import java.util.Map;
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
- * @see LeafNode
+ * @see OuterNode
  */
-public class BranchNode<Q, A> extends Node<Q, A> {
+public class InnerNode<Q, A> extends Node<Q, A> {
 
     protected @NotNull Q question;
     protected @NotNull ObservableMap<@NotNull A, @NotNull Node> children;
@@ -40,7 +40,7 @@ public class BranchNode<Q, A> extends Node<Q, A> {
      *
      * @param question the premise of the node
      */
-    public BranchNode(@NotNull Q question) {
+    public InnerNode(@NotNull Q question) {
 
         this(question, null);
     }
@@ -51,7 +51,7 @@ public class BranchNode<Q, A> extends Node<Q, A> {
      * @param question the premise of the node
      * @param children a map of <i>answers</i> to <i>follow-up questions</i>
      */
-    public BranchNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node> children) {
+    public InnerNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node> children) {
 
         super();
         this.question = question;

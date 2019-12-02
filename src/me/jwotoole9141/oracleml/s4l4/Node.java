@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * Represents a node in a non-binary tree. It should be cast to
- * either a {@link BranchNode} or a {@link LeafNode} when using.
+ * either a {@link InnerNode} or a {@link OuterNode} when using.
  *
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
