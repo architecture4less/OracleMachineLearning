@@ -33,7 +33,7 @@ import java.util.Map;
 public class InnerNode<Q, A> extends Node<Q, A> {
 
     protected @NotNull Q question;
-    protected @NotNull ObservableMap<@NotNull A, @NotNull Node> children;
+    protected @NotNull ObservableMap<@NotNull A, @NotNull Node<Q, A>> children;
 
     /**
      * Creates a new node with the given <i>question</i>.
@@ -51,7 +51,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * @param question the premise of the node
      * @param children a map of <i>answers</i> to <i>follow-up questions</i>
      */
-    public InnerNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node> children) {
+    public InnerNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node<Q, A>> children) {
 
         super();
         this.question = question;
@@ -94,7 +94,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      *
      * @return a mapping of <i>answers</i> to child nodes
      */
-    public @NotNull Map<@NotNull A, @NotNull Node> getChildren() {
+    public @NotNull Map<@NotNull A, @NotNull Node<Q, A>> getChildren() {
 
         return children;
     }
