@@ -64,18 +64,7 @@ public abstract class Node<Q, A> {
     public abstract int getSize();
 
     /**
-     * Gets a string diagram representing the tree, recursively, starting at this node.
-     *
-     * @return a visual, multi-line string
-     */
-    public @NotNull String getDiagram() {
-        return getDiagram("", "    ");
-    }
-
-    protected abstract @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch);
-
-    /**
-     * Gets a non-recursive string representation of this node.
+     * Creates a non-recursive string representation of this node.
      *
      * @return an informative, single-line string
      */
@@ -83,6 +72,17 @@ public abstract class Node<Q, A> {
     public String toString() {
         return super.toString();
     }
+
+    /**
+     * Creates a string diagram representing the tree, recursively, starting at this node.
+     *
+     * @return a visual, multi-line string
+     */
+    public @NotNull String toDiagram() {
+        return toDiagram("", "    ");
+    }
+
+    protected abstract @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch);
 
     protected void updateParent(Node<Q, A> parent, A answer) {
 

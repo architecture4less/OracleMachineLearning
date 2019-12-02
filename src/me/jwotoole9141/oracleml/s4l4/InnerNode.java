@@ -106,7 +106,17 @@ public class InnerNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
-    protected @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch) {
+    public String toString() {
+        return String.format("InnerNode[question=%s, answers={%s}]",
+                question.toString(),
+                children.keySet().stream()
+                        .map(Objects::toString)
+                        .collect(Collectors.joining(", "))
+        );
+    }
+
+    @Override
+    protected @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch) {
 
         StringBuilder result = new StringBuilder(prefix + "\\-"
                 + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
@@ -116,18 +126,8 @@ public class InnerNode<Q, A> extends Node<Q, A> {
         String newPrefix = prefix + branch;
 
         for ( Node<Q, A> child : children.values()) {
-            result.append(child.getDiagram(newPrefix, --i == 0 ? "|  " : "  "));
+            result.append(child.toDiagram(newPrefix, --i == 0 ? "|  " : "  "));
         }
         return result.toString();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("InnerNode[question=%s, answers={%s}]",
-                question.toString(),
-                children.keySet().stream()
-                        .map(Objects::toString)
-                        .collect(Collectors.joining(", "))
-        );
     }
 }
