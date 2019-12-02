@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * Represents a branch node in a non-binary tree. Branch nodes have
- * both a <i>question</i> and a map of children to various <i>answers</i> .
+ * both a <i>question</i> and a map of children to various <i>answers</i>.
  *
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
