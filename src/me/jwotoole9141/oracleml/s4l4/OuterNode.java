@@ -15,6 +15,7 @@ package me.jwotoole9141.oracleml.s4l4;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -87,6 +88,8 @@ public class OuterNode<Q, A> extends Node<Q, A> {
             @NotNull Function<Q, Map<String, Object>> questionToMap,
             @NotNull Function<A, String> answerToStr) {
 
-        return null;  // TODO
+        Map<String, Object> map = new HashMap<>();
+        map.put("answer", answerToStr.apply(getAnswer()));
+        return map;
     }
 }
