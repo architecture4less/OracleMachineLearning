@@ -50,7 +50,7 @@ public class TreeTestDriver {
         String treeQuestion = "Play?";
 
         InnerNode<String, String> tree = new InnerNode<>("Outlook?");
-        tree.getChildren().put("Sunny", new InnerNode<>("Humidity?"));  // FIXME java.lang.UnsupportedOperationException
+        tree.getChildren().put("Sunny", new InnerNode<>("Humidity?"));
         tree.getChildren().put("Overcast", new OuterNode<>("Yes"));
         tree.getChildren().put("Rainy", new InnerNode<>("Wind?"));
 
@@ -75,6 +75,6 @@ public class TreeTestDriver {
         System.out.println("\nTesting tree.toMap()...");
         System.out.println(new JSONObject(tree
                 .toMap(questionToMap, answerToStr))
-                .toJSONString());;
+                .toJSONString());
     }
 }

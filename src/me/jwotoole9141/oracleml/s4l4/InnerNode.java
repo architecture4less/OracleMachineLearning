@@ -57,7 +57,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
 
         super();
         this.question = question;
-        this.children = FXCollections.emptyObservableMap();
+        this.children = FXCollections.observableHashMap();
 
         // map listener sets or removes the parent reference of child nodes...
 
