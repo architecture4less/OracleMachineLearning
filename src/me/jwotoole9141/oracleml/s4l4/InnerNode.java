@@ -18,7 +18,6 @@ import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 /**
@@ -41,7 +40,6 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * @param question the premise of the node
      */
     public InnerNode(@NotNull Q question) {
-
         this(question, null);
     }
 
@@ -59,15 +57,15 @@ public class InnerNode<Q, A> extends Node<Q, A> {
 
         // map listener sets or removes the parent reference of child nodes...
 
-        this.children.addListener((MapChangeListener<A, Node>) change -> {
+        this.children.addListener((MapChangeListener<A, Node<Q, A>>) change -> {
 
             if (change.wasAdded()) {
-                Node child = change.getValueAdded();
-                child.parent = new WeakReference<Node>(this);
+                Node<Q, A> child = change.getValueAdded();
+                child.updateParent(this, change.getKey());
             }
             if (change.wasRemoved()) {
-                Node child = change.getValueRemoved();
-                child.parent.clear();
+                Node<Q, A> child = change.getValueRemoved();
+                child.updateParent(null, null);
             }
         });
 
@@ -83,7 +81,6 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * @return the node's premise
      */
     public @NotNull Q getQuestion() {
-
         return question;
     }
 
@@ -95,7 +92,6 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * @return a mapping of <i>answers</i> to child nodes
      */
     public @NotNull Map<@NotNull A, @NotNull Node<Q, A>> getChildren() {
-
         return children;
     }
 }

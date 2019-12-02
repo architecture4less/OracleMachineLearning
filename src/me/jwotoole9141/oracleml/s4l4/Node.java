@@ -28,9 +28,12 @@ import java.lang.ref.WeakReference;
 public abstract class Node<Q, A> {
 
     protected @NotNull WeakReference<Node<Q, A>> parent;
+    protected @NotNull WeakReference<A> parentAnswer;
 
     protected Node() {
+
         this.parent = new WeakReference<>(null);
+        this.parentAnswer = new WeakReference<>(null);
     }
 
     /**
@@ -41,5 +44,21 @@ public abstract class Node<Q, A> {
      */
     public @Nullable Node<Q, A> getParent() {
         return parent.get();
+    }
+
+    /**
+     * Gets the <i>answer</i> this node is mapped to in its
+     * parent if it exists. Its reference is held weakly.
+     *
+     * @return the parent <i>answer</i> or null
+     */
+    public @Nullable A getParentAnswer() {
+        return parentAnswer.get();
+    }
+
+    protected void updateParent(Node<Q, A> parent, A answer) {
+
+        this.parent = new WeakReference<>(parent);
+        this.parentAnswer = new WeakReference<>(answer);
     }
 }
