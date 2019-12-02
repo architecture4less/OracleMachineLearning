@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Represents a branch node in a non-binary tree. Branch nodes have
@@ -93,5 +95,15 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      */
     public @NotNull Map<@NotNull A, @NotNull Node<Q, A>> getChildren() {
         return children;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("InnerNode[question=%s, answers={%s}]",
+                question.toString(),
+                children.keySet().stream()
+                        .map(Objects::toString)
+                        .collect(Collectors.joining(", "))
+        );
     }
 }

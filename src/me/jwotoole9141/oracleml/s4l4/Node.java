@@ -61,4 +61,14 @@ public abstract class Node<Q, A> {
         this.parent = new WeakReference<>(parent);
         this.parentAnswer = new WeakReference<>(answer);
     }
+
+    /**
+     * Gets a non-recursive string representation of this node.
+     *
+     * @return an informative, single-line string
+     */
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

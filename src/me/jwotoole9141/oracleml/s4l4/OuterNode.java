@@ -58,4 +58,11 @@ public class OuterNode<Q, A> extends Node<Q, A> {
     public void setAnswer(@NotNull A answer) {
         this.answer = answer;
     }
+
+    @Override
+    public String toString() {
+        return String.format("OuterNode[answer=%s]",
+                answer.toString()
+        );
+    }
 }
