@@ -127,7 +127,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * {@inheritDoc}
      */
     @Override
-    public @Nullable Map<String, Object> toMap(
+    public @NotNull Map<String, Object> toMap(
             @NotNull Function<Q, Map<String, Object>> questionToMap,
             @NotNull Function<A, String> answerToStr) {
 

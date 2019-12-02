@@ -91,7 +91,7 @@ public abstract class Node<Q, A> {
      * @param answerToStr   a function that converts an answer in the tree to a string
      * @return a json-compatible mapping
      */
-    public abstract @Nullable Map<String, Object> toMap(
+    public abstract @NotNull Map<String, Object> toMap(
             @NotNull Function<Q, Map<String, Object>> questionToMap,
             @NotNull Function<A, String> answerToStr);
 

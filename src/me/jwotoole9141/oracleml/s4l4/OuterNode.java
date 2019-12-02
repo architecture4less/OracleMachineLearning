@@ -13,7 +13,6 @@
 package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +85,7 @@ public class OuterNode<Q, A> extends Node<Q, A> {
      * {@inheritDoc}
      */
     @Override
-    public @Nullable Map<String, Object> toMap(
+    public @NotNull Map<String, Object> toMap(
             @NotNull Function<Q, Map<String, Object>> questionToMap,
             @NotNull Function<A, String> answerToStr) {
 
