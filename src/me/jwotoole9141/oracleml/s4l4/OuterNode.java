@@ -13,6 +13,9 @@
 package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * Represents a leaf node in a non-binary tree. Leaf nodes
@@ -76,5 +79,10 @@ public class OuterNode<Q, A> extends Node<Q, A> {
         return prefix + "\\-"
                 + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
                 + "--> " + getAnswer().toString() + "\n";
+    }
+
+    @Override
+    public @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree) {
+        return null;  // TODO
     }
 }

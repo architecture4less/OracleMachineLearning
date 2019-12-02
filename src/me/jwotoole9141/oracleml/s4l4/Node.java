@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Represents a node in a non-binary tree. It should be cast to
@@ -81,6 +83,13 @@ public abstract class Node<Q, A> {
     public @NotNull String toDiagram() {
         return toDiagram("", "    ");
     }
+
+    /**
+     * Creates a json map representing the tree, recursively, starting at this node.
+     *
+     * @return a json-compatible mapping
+     */
+    public abstract @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree);
 
     protected abstract @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch);
 

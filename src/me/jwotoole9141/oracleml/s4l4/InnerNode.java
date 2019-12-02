@@ -130,4 +130,9 @@ public class InnerNode<Q, A> extends Node<Q, A> {
         }
         return result.toString();
     }
+
+    @Override
+    public @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree) {
+        return null;  // TODO
+    }
 }
