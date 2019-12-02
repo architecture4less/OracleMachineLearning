@@ -56,11 +56,12 @@ public abstract class Node<Q, A> {
         return parentAnswer.get();
     }
 
-    protected void updateParent(Node<Q, A> parent, A answer) {
-
-        this.parent = new WeakReference<>(parent);
-        this.parentAnswer = new WeakReference<>(answer);
-    }
+    /**
+     * Gets the size of the tree, recursively, starting at this node.
+     *
+     * @return the number of nodes in the tree from here down
+     */
+    public abstract int getSize();
 
     /**
      * Gets a non-recursive string representation of this node.
@@ -70,5 +71,11 @@ public abstract class Node<Q, A> {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    protected void updateParent(Node<Q, A> parent, A answer) {
+
+        this.parent = new WeakReference<>(parent);
+        this.parentAnswer = new WeakReference<>(answer);
     }
 }

@@ -60,6 +60,11 @@ public class OuterNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
+    public int getSize() {
+        return 1;
+    }
+
+    @Override
     public String toString() {
         return String.format("OuterNode[answer=%s]",
                 answer.toString()

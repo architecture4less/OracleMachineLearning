@@ -98,6 +98,14 @@ public class InnerNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
+    public int getSize() {
+        return 1 + children.values().stream()
+                .map(Node::getSize)
+                .mapToInt(Integer::intValue)
+                .sum();
+    }
+
+    @Override
     public String toString() {
         return String.format("InnerNode[question=%s, answers={%s}]",
                 question.toString(),
