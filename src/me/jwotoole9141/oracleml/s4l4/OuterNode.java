@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Represents a leaf node in a non-binary tree. Leaf nodes
@@ -82,7 +83,10 @@ public class OuterNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
-    public @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree) {
+    public @Nullable Map<String, Object> toMap(
+            @NotNull Function<Q, Map<String, Object>> questionToMap,
+            @NotNull Function<A, String> answerToStr) {
+
         return null;  // TODO
     }
 }

@@ -18,8 +18,10 @@ import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -132,7 +134,21 @@ public class InnerNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
-    public @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree) {
-        return null;  // TODO
+    public @Nullable Map<String, Object> toMap(
+            @NotNull Function<Q, Map<String, Object>> questionToMap,
+            @NotNull Function<A, String> answerToStr) {
+
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> subMap = new HashMap<>();
+
+        for (Map.Entry<A, Node<Q, A>> entry : children.entrySet()) {
+            subMap.put(answerToStr.apply(entry.getKey()),
+                    entry.getValue().toMap(questionToMap, answerToStr));
+        }
+
+        map.put("question", questionToMap.apply(question));
+        map.put("children", subMap);
+
+        return map;
     }
 }

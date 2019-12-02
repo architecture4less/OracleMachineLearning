@@ -89,7 +89,9 @@ public abstract class Node<Q, A> {
      *
      * @return a json-compatible mapping
      */
-    public abstract @Nullable Map<String, Object> toMap(@Nullable Node<Q, A> tree);
+    public abstract @Nullable Map<String, Object> toMap(
+            @NotNull Function<Q, Map<String, Object>> questionToMap,
+            @NotNull Function<A, String> answerToStr);
 
     protected abstract @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch);
 
