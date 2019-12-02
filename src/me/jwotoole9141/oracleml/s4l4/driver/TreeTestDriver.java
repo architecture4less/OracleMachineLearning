@@ -73,7 +73,7 @@ public class TreeTestDriver {
         System.out.println(tree.toString());
 
         System.out.println("\nTesting tree.toDiagram()...");
-        System.out.println(tree.toDiagram());
+        System.out.println("Play?\n" + tree.toDiagram());
 
         System.out.println("\nTesting tree.toMap()...");
         System.out.println(new JSONObject(tree
@@ -98,5 +98,25 @@ public class TreeTestDriver {
         System.out.println(new JSONObject(tree
                 .toMap(questionToMap, Objects::toString))
                 .toJSONString());
+
+        System.out.println("\nTesting getParent()...");
+        System.out.println("sunny's parent: "
+                + sunny.getParent());
+
+        System.out.println("\nTesting getParentAnswer()...");
+        System.out.println("sunny's parent answer: "
+                + sunny.getParentAnswer());
+
+        // System.out.println("\nTesting getQuestion()...");
+        // System.out.println("sunny's question: "
+        //         + sunny.getQuestion());
+        //
+        // System.out.println("\nTesting getChild()...");
+        // System.out.println("sunny's 'high' answer: "
+        //         + sunny.getChildren().get("High"));
+        //
+        // System.out.println("\nTesting getAnswer()...");
+        // System.out.println("sunny & high's answer: "
+        //         + ((OuterNode) sunny.getChildren().get("High")).getAnswer());
     }
 }
