@@ -64,11 +64,17 @@ public class OuterNode<Q, A> extends Node<Q, A> {
         this.answer = answer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getSize() {
         return 1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return String.format("OuterNode[answer=%s]",
@@ -76,13 +82,9 @@ public class OuterNode<Q, A> extends Node<Q, A> {
         );
     }
 
-    @Override
-    protected @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch) {
-        return prefix + "\\-"
-                + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
-                + "--> " + getAnswer().toString() + "\n";
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @Nullable Map<String, Object> toMap(
             @NotNull Function<Q, Map<String, Object>> questionToMap,
@@ -91,5 +93,12 @@ public class OuterNode<Q, A> extends Node<Q, A> {
         Map<String, Object> map = new HashMap<>();
         map.put("answer", answerToStr.apply(getAnswer()));
         return map;
+    }
+
+    @Override
+    protected @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch) {
+        return prefix + "\\-"
+                + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
+                + "--> " + getAnswer().toString() + "\n";
     }
 }

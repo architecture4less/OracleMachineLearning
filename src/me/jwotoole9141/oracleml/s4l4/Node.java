@@ -87,6 +87,8 @@ public abstract class Node<Q, A> {
     /**
      * Creates a json map representing the tree, recursively, starting at this node.
      *
+     * @param questionToMap a function that converts a question in the tree to a map
+     * @param answerToStr   a function that converts an answer in the tree to a string
      * @return a json-compatible mapping
      */
     public abstract @Nullable Map<String, Object> toMap(
