@@ -65,6 +65,13 @@ public class OuterNode<Q, A> extends Node<Q, A> {
     }
 
     @Override
+    protected @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch) {
+        return prefix + "\\-"
+                + (getParentAnswer() == null ? "" : "[" + getParentAnswer().toString() + "]")
+                + "--> " + getAnswer().toString() + "\n";
+    }
+
+    @Override
     public String toString() {
         return String.format("OuterNode[answer=%s]",
                 answer.toString()
