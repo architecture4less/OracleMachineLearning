@@ -14,5 +14,29 @@ package me.jwotoole9141.oracleml.s4l4;
 
 public class DataTable {
 
-
+    /*
+     * Based on my ID3 pseudocode,
+     * this class needs:
+     *
+     * successes - the number of rows that are 'true' in the result column
+     * total - the number of rows
+     * attrs - the number of columns other than 'result'
+     *
+     * without(attr) - gets a subview of the table without the column 'attr'
+     * with_only(outcome) - gets a subview of the table with only the rows that have 'outcome' for 'attr'
+     *
+     * ----------------------------------------
+     *
+     * Based on these pseudo specs,
+     * this system should have:
+     *
+     * DataAttr - 'question' interface for enum classes { toMap() }
+     * DataOutcome - 'answer' interface for enum classes { toMap() }
+     * DataTable - boxes a parsed csv file, basically { toCSV(); static fromCSV() }
+     *
+     * DataTable.Attr - default 'attr' implementation using a string (these could also use enums)
+     * DataTable.Outcome - default 'outcome' implementation using a string
+     * DataTable.Result - default 'outcome' implementation using a bool
+     *
+     */
 }
