@@ -34,8 +34,8 @@ public abstract class Node<Q, A> {
      * Creates a node from the given json map.
      *
      * @param map             a json map
-     * @param questionFromMap a function that converts a {@link Map} to a {@link Q}
-     * @param answerFromStr   a function that converts a {@link String} to a {@link A}
+     * @param questionFromMap a function that converts a {@link Map} to a(n) {@link Q}
+     * @param answerFromStr   a function that converts a {@link String} to a(n) {@link A}
      * @return the node represented by the given json map
      *
      * @throws ClassCastException       non-{@link String} key or unexpected value type
@@ -130,8 +130,8 @@ public abstract class Node<Q, A> {
     /**
      * Creates a json map representing the tree, recursively, starting at this node.
      *
-     * @param questionToMap a function that converts a question in the tree to a map
-     * @param answerToStr   a function that converts an answer in the tree to a string
+     * @param questionToMap a function that converts a(n) {@link Q} in the tree to a {@link Map}
+     * @param answerToStr   a function that converts a(n) {@link A} in the tree to a {@link String}
      * @return a json-compatible mapping
      */
     public abstract @NotNull Map<String, Object> toMap(
