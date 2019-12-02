@@ -64,6 +64,17 @@ public abstract class Node<Q, A> {
     public abstract int getSize();
 
     /**
+     * Gets a string diagram representing the tree, recursively, starting at this node.
+     *
+     * @return a visual, multi-line string
+     */
+    public @NotNull String getDiagram() {
+        return getDiagram("", "    ");
+    }
+
+    protected abstract @NotNull String getDiagram(@NotNull String prefix, @NotNull String branch);
+
+    /**
      * Gets a non-recursive string representation of this node.
      *
      * @return an informative, single-line string
