@@ -1,18 +1,18 @@
 /*
  * AUTH: Jared O'Toole
- * DATE: 12/1/2019 8:48 PM
+ * DATE: 12/2/2019 12:38 AM
  * PROJ: OracleMachineLearning
- * FILE: ID3TestDriver.java
+ * FILE: TreeTestDriver.java
  *
  * "Create an ID3 Tree" task for Section 4 Lesson 4
  * of the AI with ML in Java Oracle iLearning Course.
  *
- * Defines the ID3TestDriver driver class.
+ * Defines the TreeTestDriver driver class.
  */
 
-package me.jwotoole9141.oracleml.s4l4;
+package me.jwotoole9141.oracleml.s4l4.driver;
 
-public class ID3TestDriver {
+public class TreeTestDriver {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
