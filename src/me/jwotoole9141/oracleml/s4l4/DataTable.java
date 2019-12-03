@@ -189,6 +189,49 @@ public class DataTable {
                             .map(T::toString)
                             .collect(Collectors.joining(", ")));
         }
+
+        /**
+         * Creates a string diagram representing this column and its data.
+         *
+         * @param dataSerializer a function that takes a datum from this column's rows
+         *                       and serializes it to a string  # TODO
+         * @return
+         */
+        public String toDiagram(Function<T, String> dataSerializer) {
+
+            // serialize all the data under the column...
+
+            List<String> rowStrings = rows.stream()
+                    .map(e -> dataSerializer.apply(e))
+                    .collect(Collectors.toList());
+
+            // create a row format specifier...
+
+            int maxCellWidth = rowStrings.stream()
+                    .map(String::length)
+                    .max(Integer::compare).orElse(0);
+
+            String cellFormat = "%< " + maxCellWidth + "s";
+            String rowFormat = String.format("|%1$s|%1$s|%n", cellFormat);
+
+            // add the header...
+
+            StringBuilder diagram = new StringBuilder(
+                    String.format(rowFormat, "row", label));
+
+            // add a divider...
+
+            for (int i = 0; i < (maxCellWidth * 2) + 3; i++) {
+                diagram.append("-");
+            }
+
+            // add each row of data...
+
+            for (int i = 0; i < rowStrings.size(); i++) {
+                diagram.append(String.format(rowFormat,
+                        String.valueOf(i), rowStrings.get(i)));
+            }
+        }
     }
 
     private final @NotNull String title;
