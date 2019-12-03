@@ -408,8 +408,8 @@ public class DataTable {
 
             // write the table header...
 
-            String[] header = new String[cols.size()];
-            for (int i = 0; i < cols.size(); i++) {
+            String[] header = new String[numCols];
+            for (int i = 0; i < numCols; i++) {
                 header[i] = cols.get(i).label;
             }
             csvWriter.writeNext(header);
@@ -417,15 +417,17 @@ public class DataTable {
             // ensure the number of serializers, if any, match the number of columns...
 
             if (serializers.length > 0 && (serializers.length != header.length)) {
-                throw new IllegalArgumentException("Mismatch in number of columns and serializers.");
+                throw new IllegalArgumentException(String.format(
+                        "Mismatch in number of columns and serializers. (%d and %d)",
+                        header.length, serializers.length));
             }
 
             // write the table data...
 
             for (int r = 0; r < numRows; r++) {
-                String[] line = new String[cols.size()];
+                String[] line = new String[numCols];
 
-                for (int c = 0; c < cols.size(); c++) {
+                for (int c = 0; c < numCols; c++) {
                     line[c] = (serializers.length == 0)
                             ? cols.get(c).rows.get(r).toString()
                             : serializers[c].apply(cols.get(c).rows.get(r));
@@ -468,7 +470,9 @@ public class DataTable {
             // ensure the number of deserializers, if any, match the number of columns...
 
             if (deserializers.length > 0 && (deserializers.length != header.length)) {
-                throw new IllegalArgumentException("Mismatch in number of columns and deserializers.");
+                throw new IllegalArgumentException(String.format(
+                        "Mismatch in number of columns and deserializers. (%d and %d)",
+                        header.length, deserializers.length));
             }
 
             // initialize the data map...
@@ -483,8 +487,10 @@ public class DataTable {
             String[] line;
             while ((line = csvReader.readNext()) != null) {
 
-                if (line.length != header.length) {
-                    throw new IllegalArgumentException("Row sizes are unequal.");
+                if (line.length != 0 && line.length != header.length) {
+                    throw new IllegalArgumentException(String.format(
+                            "Mismatch in number of columns and width of row (%d and %d).",
+                            line.length, header.length));
                 }
                 for (int i = 0; i < line.length; i++) {
                     data.get(header[i]).add(
