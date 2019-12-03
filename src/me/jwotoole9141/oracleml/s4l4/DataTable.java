@@ -23,8 +23,8 @@ public class DataTable {
      * Based on my ID3 pseudocode,
      * this class needs:
      *
-     * - [ ] successes - the number of rows that are 'true' in the result column
-     * - [ ] total - the number of rows
+     * - [X] successes - the number of rows that are 'true' in the result column ( col.getDistr )
+     * - [X] total - the number of rows
      * - [X] attrs - the number of columns other than 'result'
      *
      * - [X] without(attr) - gets a subview of the table without the column 'attr'
@@ -33,28 +33,49 @@ public class DataTable {
 
     public static class Column<T> {
 
-        protected List<T> rows;
-        protected Set<T> values;
+        private final List<T> rows = new ArrayList<>();
+        private final Set<T> values = new HashSet<>();
+        private List<T> rowsView = Collections.unmodifiableList(rows);
+        private Set<T> valuesView = Collections.unmodifiableSet(values);
 
         public Column() {
             this(null);
         }
 
         public Column(List<T> rows) {
-
-            this.rows = rows == null ? new ArrayList<>() : new ArrayList<>(rows);
-            this.values = new HashSet<>(this.rows);
+            if (rows != null) {
+                this.rows.addAll(rows);
+                this.values.addAll(rows);
+            }
         }
 
         public List<T> getRows() {
-            return Collections.unmodifiableList(rows);
+            return rowsView;
         }
 
         public Set<T> getValues() {
-            return Collections.unmodifiableSet(values);
+            return valuesView;
         }
 
-        public List<Integer> identifySubColumn(Predicate<T> filter) {
+        public Map<T, Double> getDistribution() {
+            return getDistribution(values);
+        }
+
+        public Map<T, Double> getDistribution(Set<T> values) {
+
+            Map<T, Double> distr = new HashMap<>();
+            for (T value : rows) {
+                if (values.contains(value)) {
+                    distr.put(value, 1 + distr.getOrDefault(value, 0d));
+                }
+            }
+            for (T value : distr.keySet()) {
+                distr.put(value, distr.get(value) / distr.size());
+            }
+            return distr;
+        }
+
+        public List<Integer> subColumnIndices(Predicate<T> filter) {
             return IntStream.range(0, rows.size())
                     .filter(i -> filter.test(rows.get(i)))
                     .boxed().collect(Collectors.toList());
@@ -62,52 +83,82 @@ public class DataTable {
 
         public Column<T> toSubColumn(List<Integer> indices) {
             return new Column<>(indices.stream()
-                    .map(i -> rows.get(i))
+                    .map(rows::get)
+                    .collect(Collectors.toList()));
+        }
+
+        public Column<T> toSubColumn(Predicate<T> filter) {
+            return new Column<>(IntStream.range(0, rows.size())
+                    .filter(i -> filter.test(rows.get(i)))
+                    .boxed()
+                    .map(rows::get)
                     .collect(Collectors.toList()));
         }
     }
 
-    private List<Column> attrs;
-    protected int size;
+    private final List<Column> cols = new ArrayList<>();
+    private final List<Column> colsView = Collections.unmodifiableList(cols);
+
+    private int numRows = 0;
+    private int size = 0;
 
     public DataTable() {
         this(null);
     }
 
-    public DataTable(Set<Column> attrs) {
+    public DataTable(Set<Column> columns) {
 
-        this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
-
-        // another way of saying "all columns should be of equal size" is "the
-        // number of unique column sizes should be equal to the number of columns"...
-
-        if (this.attrs.stream().map(c -> c.getRows().size()).distinct().count() != this.attrs.size()) {
-            throw new IllegalArgumentException("Row sizes are unequal.");
+        if (columns != null) {
+            this.cols.addAll(columns);
         }
+        if (!this.cols.isEmpty()) {
 
+            this.numRows = this.cols.get(0).rows.size();
+            this.size = numRows * this.cols.size();
+
+            for (Column attr : this.cols) {
+                if (attr.rows.size() != numRows) {
+                    throw new IllegalArgumentException("Row sizes are unequal.");
+                }
+            }
+        }
     }
 
     public List<Column> getColumns() {
-        return Collections.unmodifiableList(attrs);
+        return colsView;
+    }
+
+    public int getNumRows() {
+        return numRows;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public DataTable toSubTable(Predicate<Column> columnFilter) {
-        return new DataTable(attrs.stream().filter(columnFilter).collect(Collectors.toSet()));
+        return new DataTable(cols.stream().filter(columnFilter).collect(Collectors.toSet()));
     }
 
     public <T> DataTable toSubTable(Column<T> filterColumn, Predicate<T> rowFilter) {
-        if (attrs.contains(filterColumn)) {
-            List<Integer> indices = filterColumn.identifySubColumn(rowFilter);
-            return new DataTable(attrs.stream().map(c -> c.toSubColumn(indices)).collect(Collectors.toSet()));
+        if (cols.contains(filterColumn)) {
+            List<Integer> indices = filterColumn.subColumnIndices(rowFilter);
+            return new DataTable(cols.stream().map(c -> c.toSubColumn(indices)).collect(Collectors.toSet()));
         }
         return this;
     }
 
-    public static DataTable fromCSV(String csv) {
+    @Override
+    public String toString() {
+        return super.toString();  // TODO
+    }
 
-        // DataTable d = new DataTable();
-        // Column<String> myCol = new Column<>();
-        // d.subTableByRow(myCol, s -> s.equals("hello!"));
+    public String toCSV() {
+
+        return null;  // TODO
+    }
+
+    public static DataTable fromCSV(String csv) {
 
         return null;  // TODO
     }
