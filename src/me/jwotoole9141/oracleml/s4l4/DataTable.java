@@ -19,18 +19,6 @@ import java.util.stream.IntStream;
 
 public class DataTable {
 
-    /*
-     * Based on my ID3 pseudocode,
-     * this class needs:
-     *
-     * - [X] successes - the number of rows that are 'true' in the result column ( col.getDistr )
-     * - [X] total - the number of rows
-     * - [X] attrs - the number of columns other than 'result'
-     *
-     * - [X] without(attr) - gets a subview of the table without the column 'attr'
-     * - [X] with_only(outcome) - gets a subview of the table with only the rows that have 'outcome' for 'attr'
-     */
-
     public static class Column<T> {
 
         private final List<T> rows = new ArrayList<>();
@@ -78,7 +66,8 @@ public class DataTable {
         public List<Integer> subColumnIndices(Predicate<T> filter) {
             return IntStream.range(0, rows.size())
                     .filter(i -> filter.test(rows.get(i)))
-                    .boxed().collect(Collectors.toList());
+                    .boxed()
+                    .collect(Collectors.toList());
         }
 
         public Column<T> toSubColumn(List<Integer> indices) {
@@ -116,8 +105,8 @@ public class DataTable {
             this.numRows = this.cols.get(0).rows.size();
             this.size = numRows * this.cols.size();
 
-            for (Column attr : this.cols) {
-                if (attr.rows.size() != numRows) {
+            for (Column col : this.cols) {
+                if (col.rows.size() != numRows) {
                     throw new IllegalArgumentException("Row sizes are unequal.");
                 }
             }
@@ -150,7 +139,10 @@ public class DataTable {
 
     @Override
     public String toString() {
-        return super.toString();  // TODO
+        return String.format("DataTable[size=%d, cols={%s}]",
+                size, cols.stream()
+                        .map(Column::toString)
+                        .collect(Collectors.joining(", ")));
     }
 
     public String toCSV() {
