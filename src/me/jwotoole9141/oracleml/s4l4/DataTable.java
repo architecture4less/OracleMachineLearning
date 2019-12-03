@@ -12,38 +12,46 @@
 
 package me.jwotoole9141.oracleml.s4l4;
 
-import org.javatuples.Pair;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataTable {
 
+    /*
+     * Based on my ID3 pseudocode,
+     * this class needs:
+     *
+     * - [ ] successes - the number of rows that are 'true' in the result column
+     * - [ ] total - the number of rows
+     * - [X] attrs - the number of columns other than 'result'
+     *
+     * - [X] without(attr) - gets a subview of the table without the column 'attr'
+     * - [X] with_only(outcome) - gets a subview of the table with only the rows that have 'outcome' for 'attr'
+     */
+
     public static class Column<T> {
 
-        protected List<T> outcomes;
         protected List<T> rows;
+        protected Set<T> values;
 
-        public Column(List<T> outcomes) {
-            this(outcomes, null);
+        public Column() {
+            this(null);
         }
 
-        protected Column(List<T> outcomes, List<T> rows) {
+        public Column(List<T> rows) {
 
-            this.outcomes = outcomes;
             this.rows = rows == null ? new ArrayList<>() : new ArrayList<>(rows);
-        }
-
-        public List<T> getValues() {
-            return Collections.unmodifiableList(outcomes);
+            this.values = new HashSet<>(this.rows);
         }
 
         public List<T> getRows() {
             return Collections.unmodifiableList(rows);
+        }
+
+        public Set<T> getValues() {
+            return Collections.unmodifiableSet(values);
         }
 
         public List<Integer> identifySubColumn(Predicate<T> filter) {
@@ -53,23 +61,11 @@ public class DataTable {
         }
 
         public Column<T> toSubColumn(List<Integer> indices) {
-            return new Column<>(outcomes, indices.stream()
+            return new Column<>(indices.stream()
                     .map(i -> rows.get(i))
                     .collect(Collectors.toList()));
         }
     }
-
-    /*
-     * Based on my ID3 pseudocode,
-     * this class needs:
-     *
-     * successes - the number of rows that are 'true' in the result column
-     * total - the number of rows
-     * attrs - the number of columns other than 'result'
-     *
-     * without(attr) - gets a subview of the table without the column 'attr'
-     * with_only(outcome) - gets a subview of the table with only the rows that have 'outcome' for 'attr'
-     */
 
     private List<Column> attrs;
 
@@ -77,7 +73,7 @@ public class DataTable {
         this(null);
     }
 
-    public DataTable(List<Column> attrs) {
+    public DataTable(Set<Column> attrs) {
         this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
     }
 
@@ -85,22 +81,23 @@ public class DataTable {
         return Collections.unmodifiableList(attrs);
     }
 
-    public DataTable subTable(Predicate<Column> filter) {
-        return new DataTable(attrs.stream().filter(filter).collect(Collectors.toList()));
+    public DataTable toSubTable(Predicate<Column> columnFilter) {
+        return new DataTable(attrs.stream().filter(columnFilter).collect(Collectors.toSet()));
     }
 
-    public DataTable subTable(Column attr, Predicate<Object> filter) {
-        for (Column<?> attr : attrs) {
-            Column<?> newAttr = new Column<>(attr.outcomes);
-            for (Object e : attr.getRows()) {
-                if (filter.test(new Pair<>(attr, e))) {
-                    newAttr.rows.add(e);
-                }
-            }
+    public <T> DataTable toSubTable(Column<T> filterColumn, Predicate<T> rowFilter) {
+        if (attrs.contains(filterColumn)) {
+            List<Integer> indices = filterColumn.identifySubColumn(rowFilter);
+            return new DataTable(attrs.stream().map(c -> c.toSubColumn(indices)).collect(Collectors.toSet()));
         }
+        return this;
     }
 
     public static DataTable fromCSV(String csv) {
+
+        // DataTable d = new DataTable();
+        // Column<String> myCol = new Column<>();
+        // d.subTableByRow(myCol, s -> s.equals("hello!"));
 
         return null;  // TODO
     }
