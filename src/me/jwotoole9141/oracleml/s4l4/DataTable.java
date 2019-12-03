@@ -12,9 +12,52 @@
 
 package me.jwotoole9141.oracleml.s4l4;
 
-import java.util.*;
+import org.javatuples.Pair;
 
-public class DataTable<A extends DataAttr, O extends DataOutcome> {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class DataTable {
+
+    public static class Column<T> {
+
+        protected List<T> outcomes;
+        protected List<T> rows;
+
+        public Column(List<T> outcomes) {
+            this(outcomes, null);
+        }
+
+        protected Column(List<T> outcomes, List<T> rows) {
+
+            this.outcomes = outcomes;
+            this.rows = rows == null ? new ArrayList<>() : new ArrayList<>(rows);
+        }
+
+        public List<T> getValues() {
+            return Collections.unmodifiableList(outcomes);
+        }
+
+        public List<T> getRows() {
+            return Collections.unmodifiableList(rows);
+        }
+
+        public List<Integer> identifySubColumn(Predicate<T> filter) {
+            return IntStream.range(0, rows.size())
+                    .filter(i -> filter.test(rows.get(i)))
+                    .boxed().collect(Collectors.toList());
+        }
+
+        public Column<T> toSubColumn(List<Integer> indices) {
+            return new Column<>(outcomes, indices.stream()
+                    .map(i -> rows.get(i))
+                    .collect(Collectors.toList()));
+        }
+    }
 
     /*
      * Based on my ID3 pseudocode,
@@ -26,50 +69,39 @@ public class DataTable<A extends DataAttr, O extends DataOutcome> {
      *
      * without(attr) - gets a subview of the table without the column 'attr'
      * with_only(outcome) - gets a subview of the table with only the rows that have 'outcome' for 'attr'
-     *
-     * ----------------------------------------
-     *
-     * Based on these pseudo specs,
-     * this system should have:
-     *
-     * DataAttr - 'question' interface for enum classes { toMap() }
-     * DataOutcome - 'answer' interface for enum classes { toMap() }
-     * DataTable - boxes a parsed csv file, basically { toCSV(); static fromCSV() }
-     *
-     * DataTable.Attr - default 'attr' implementation using a string (these could also use enums)
-     * DataTable.Outcome - default 'outcome' implementation using a string
-     * DataTable.Result - default 'outcome' implementation using a bool
-     *
      */
 
-    private A resultCol;
-    private List<O> resultRows;
-    private Map<DataAttr, List<DataOutcome>> data;
+    private List<Column> attrs;
 
-    public A getResultAttr() {
-        return resultCol;
+    public DataTable() {
+        this(null);
     }
 
-    public List<O> getResultRows() {
-        return Collections.unmodifiableList(resultRows);
+    public DataTable(List<Column> attrs) {
+        this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
     }
 
-    public Set<DataAttr> getDataAttrs() {
-        return Collections.unmodifiableSet(data.keySet());
+    public List<Column> getColumns() {
+        return Collections.unmodifiableList(attrs);
     }
 
-    public List<DataOutcome> getDataRows(DataAttr attr) {
-        if (!data.containsKey(attr)) {
-            return Collections.unmodifiableList(new ArrayList<>());
+    public DataTable subTable(Predicate<Column> filter) {
+        return new DataTable(attrs.stream().filter(filter).collect(Collectors.toList()));
+    }
+
+    public DataTable subTable(Column attr, Predicate<Object> filter) {
+        for (Column<?> attr : attrs) {
+            Column<?> newAttr = new Column<>(attr.outcomes);
+            for (Object e : attr.getRows()) {
+                if (filter.test(new Pair<>(attr, e))) {
+                    newAttr.rows.add(e);
+                }
+            }
         }
-        return Collections.unmodifiableList(data.get(attr));
     }
 
-    public DataTable without() {
-        return null;  // TODO
-    }
+    public static DataTable fromCSV(String csv) {
 
-    public DataTable withOnly() {
         return null;  // TODO
     }
 }
