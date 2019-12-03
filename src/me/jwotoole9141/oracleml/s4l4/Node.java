@@ -72,7 +72,7 @@ public abstract class Node<Q, A> {
      * @return an informative, single-line string
      */
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return super.toString();
     }
 

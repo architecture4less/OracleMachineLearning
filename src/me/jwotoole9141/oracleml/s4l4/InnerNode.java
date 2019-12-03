@@ -113,7 +113,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return String.format("InnerNode[question=%s, answers={%s}]",
                 question.toString(),
                 children.keySet().stream()

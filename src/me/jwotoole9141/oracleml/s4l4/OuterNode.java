@@ -75,7 +75,7 @@ public class OuterNode<Q, A> extends Node<Q, A> {
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return String.format("OuterNode[answer=%s]",
                 answer.toString()
         );
