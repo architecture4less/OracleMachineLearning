@@ -16,10 +16,12 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -168,28 +170,99 @@ public class DataTable {
                         .collect(Collectors.joining(", ")));
     }
 
-    public String toCSV() {
+    @SafeVarargs
+    public final void toCsv(Function<Object, String>... serializers)
+            throws IOException {
 
-        StringWriter strWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(strWriter);
-
-        return null;  // TODO
+        toCsv(new File(title), serializers);
     }
 
-    public static DataTable fromCSV(String csv) {
+    @SafeVarargs
+    public final void toCsv(File file, Function<Object, String>... serializers)
+            throws IOException {
 
-        try {
-            StringReader strReader = new StringReader(csv);
-            CSVReader csvReader = new CSVReader(strReader);
+        try (FileWriter fileWriter = new FileWriter(file);
+             CSVWriter csvWriter = new CSVWriter(fileWriter)) {
+
+            // write the table header...
+
+            String[] header = new String[cols.size()];
+            for (int i = 0; i < cols.size(); i++) {
+                header[i] = cols.get(i).label;
+            }
+            csvWriter.writeNext(header);
+
+            // ensure the number of serializers, if any, match the number of columns...
+
+            if (serializers.length > 0 && (serializers.length != header.length)) {
+                throw new IllegalArgumentException("Mismatch in number of columns and serializers.");
+            }
+
+            // write the table data...
+
+            for (int r = 0; r < numRows; r++) {
+                String[] line = new String[cols.size()];
+
+                for (int c = 0; c < cols.size(); c++) {
+                    line[c] = serializers[c].apply(
+                            cols.get(c).rows.get(r));
+                }
+                csvWriter.writeNext(line);
+            }
+        }
+    }
+
+    @SafeVarargs  // 'deserializers' array is only accessed
+    public static DataTable fromCsvFile(File file, Function<String, Object>... deserializers)
+            throws IOException, CsvValidationException, IllegalArgumentException {
+
+        try (FileReader fileReader = new FileReader(file);
+             CSVReader csvReader = new CSVReader(fileReader)) {
+
+            // read the table header...
+
+            String[] header = csvReader.readNext();
+            if (header == null) {
+                throw new IllegalArgumentException("CSV was empty.");
+            }
+
+            // ensure the number of deserializers, if any, match the number of columns...
+
+            if (deserializers.length > 0 && (deserializers.length != header.length)) {
+                throw new IllegalArgumentException("Mismatch in number of columns and deserializers.");
+            }
+
+            // initialize the data map...
+
+            Map<String, List<Object>> data = new HashMap<>();
+            for (String label : header) {
+                data.put(label, new ArrayList<>());
+            }
+
+            // collect table data...
 
             String[] line;
             while ((line = csvReader.readNext()) != null) {
 
+                if (line.length != header.length) {
+                    throw new IllegalArgumentException("Row sizes are unequal.");
+                }
+                for (int i = 0; i < line.length; i++) {
+                    data.get(header[i]).add(
+                            deserializers[i].apply(line[i]));
+                }
             }
+
+            // parse columns...
+
+            Set<Column> columns = new HashSet<>();
+            for (String label : data.keySet()) {
+                columns.add(new Column<>(label, data.get(label)));
+            }
+
+            // create and return the data table...
+
+            return new DataTable(file.getName(), columns);
         }
-        catch (IOException | CsvValidationException e) {
-            e.printStackTrace();
-        }
-        return null;  // TODO
     }
 }
