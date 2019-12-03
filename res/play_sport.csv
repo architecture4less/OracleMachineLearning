@@ -6,7 +6,7 @@ rain,       mild,           high,       weak,   yes
 rain,       cold,           normal,     weak,   yes
 rain,       cold,           normal,     strong, no
 overcast,   cold,           normal,     strong, yes
-sunny,      mild,           high,       weak,   no,
+sunny,      mild,           high,       weak,   no
 sunny,      cold,           normal,     weak,   yes
 rain,       mild,           normal,     weak,   yes
 sunny,      mild,           normal,     strong, yes
