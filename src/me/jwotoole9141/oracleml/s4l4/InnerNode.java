@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -118,7 +117,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
         return String.format("InnerNode[question=%s, answers={%s}]",
                 question.toString(),
                 children.keySet().stream()
-                        .map(Objects::toString)
+                        .map(A::toString)
                         .collect(Collectors.joining(", "))
         );
     }
