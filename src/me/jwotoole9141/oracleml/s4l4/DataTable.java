@@ -68,6 +68,7 @@ public class DataTable {
     }
 
     private List<Column> attrs;
+    protected int size;
 
     public DataTable() {
         this(null);
@@ -75,6 +76,18 @@ public class DataTable {
 
     public DataTable(Set<Column> attrs) {
         this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
+        this.size = this.attrs.stream()
+                .map(c -> c.getRows().size())
+                .mapToInt(Integer::intValue)
+                .max().orElse(0);
+
+        for (Column attr : this.attrs) {
+            int sizeDiff = this.size = attr.getRows().size();
+            for (int i = 0; i < sizeDiff; i++) {
+                attr.rows.add(null);
+            }
+        }
+
     }
 
     public List<Column> getColumns() {
