@@ -75,17 +75,14 @@ public class DataTable {
     }
 
     public DataTable(Set<Column> attrs) {
-        this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
-        this.size = this.attrs.stream()
-                .map(c -> c.getRows().size())
-                .mapToInt(Integer::intValue)
-                .max().orElse(0);
 
-        for (Column attr : this.attrs) {
-            int sizeDiff = this.size = attr.getRows().size();
-            for (int i = 0; i < sizeDiff; i++) {
-                attr.rows.add(null);
-            }
+        this.attrs = attrs == null ? new ArrayList<>() : new ArrayList<>(attrs);
+
+        // another way of saying "all columns should be of equal size" is "the
+        // number of unique column sizes should be equal to the number of columns"...
+
+        if (this.attrs.stream().map(c -> c.getRows().size()).distinct().count() != this.attrs.size()) {
+            throw new IllegalArgumentException("Row sizes are unequal.");
         }
 
     }
