@@ -105,8 +105,7 @@ public class DataTable {
         }
 
         /**
-         * Gets the percent distribution of every data value under this column.
-         * Some of this column's rows shall have been filtered out.
+         * Gets the percent distribution of every unique data value under this column.
          *
          * @return a map of the unique data values to their fraction of the whole column
          */
@@ -122,16 +121,39 @@ public class DataTable {
          */
         public @NotNull Map<T, Double> getDistribution(@NotNull Set<T> values) {
 
+            Map<T, Integer> counts = getCount(values);
             Map<T, Double> distr = new HashMap<>();
-            for (T value : rows) {
-                if (values.contains(value)) {
-                    distr.put(value, 1 + distr.getOrDefault(value, 0d));
-                }
-            }
-            for (T value : distr.keySet()) {
-                distr.put(value, distr.get(value) / distr.size());
+
+            for (T value : counts.keySet()) {
+                distr.put(value, counts.get(value) / (double) counts.size());
             }
             return distr;
+        }
+
+        /**
+         * Gets the count of every unique data value under this column.
+         *
+         * @return a map of the unique data values to their number of occurances
+         */
+        public Map<T, Integer> getCount() {
+            return getCount(values);
+        }
+
+        /**
+         * Gets a count for the given data values under this column.
+         *
+         * @param values the set of data values to get counts for
+         * @return a map of the data values to their number of occurances
+         */
+        public Map<T, Integer> getCount(Set<T> values) {
+
+            Map<T, Integer> counts = new HashMap<>();
+            for (T value : rows) {
+                if (values.contains(value)) {
+                    counts.put(value, 1 + counts.getOrDefault(value, 0));
+                }
+            }
+            return counts;
         }
 
         /**
