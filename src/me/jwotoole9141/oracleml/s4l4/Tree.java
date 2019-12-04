@@ -14,6 +14,7 @@ package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -48,7 +49,7 @@ public class Tree {
 
         NodeInner<Q, A> tree = new NodeInner<>(toQuestion.apply(table.getTitle()));
         DataTable.Column results = table.getColumns().get(resultColIndex);
-        algorithm.branch(tree, table.toSubTable(col -> col != results), results, toQuestion, toAnswerByCol);
+//        algorithm.branch(tree, table.toSubTable(col -> col != results), results, toQuestion, toAnswerByCol);
         return tree;  // FIXME
     }
 
@@ -72,20 +73,22 @@ public class Tree {
                     @NotNull Function<Object, A>[] toAnswerByCol)
                     throws IllegalArgumentException {
 
-                if (table.getNumCells() == 0) {
-                    return;
-                }
+                // TODO
 
-                @SuppressWarnings("unchecked")
-                Map<Object, Double> valueDistr = results.getDistribution();
-
-                for (Object value : valueDistr.keySet()) {
-                    double distr = valueDistr.get(value);
-                    if (distr == 0 || distr == 1) {
-
-                        // node.result = px
-                    }
-                }
+//                if (table.getNumCells() == 0) {
+//                    return;
+//                }
+//
+//                @SuppressWarnings("unchecked")
+//                Map<Object, Double> valueDistr = results.getDistribution();
+//
+//                for (Object value : valueDistr.keySet()) {
+//                    double distr = valueDistr.get(value);
+//                    if (distr == 0 || distr == 1) {
+//
+//                        // node.result = px
+//                    }
+//                }
             }
         };
 
@@ -112,7 +115,7 @@ public class Tree {
                 throws IllegalArgumentException;
 
         /**
-         * Gets the entropy of a column of data. Each datum is
+         * Calculates the entropy of a column of data. Each datum is
          * classified as either a success or not, first.
          *
          * @param results     the column of a table that holds {@code successVals}
@@ -128,7 +131,7 @@ public class Tree {
 
             int x = results.getCounts(successVals)
                     .values().stream()
-                    .mapToInt(i -> (int) i)
+                    .mapToInt(Integer::intValue)
                     .sum();
 
             double px = x / (double) results.getRows().size();
@@ -139,32 +142,47 @@ public class Tree {
             return (0 - (px * Math.log(px)) - (pk * Math.log(pk))) / LOG_2;
         }
 
-        public static <T> double gain(
-                double entropy,
-                @NotNull DataTable table,
-                int testColIndex,
-                int resultsColIndex,
-                @NotNull Set<T> successVals) {
+        /**
+         * Calculates the gain in entropy of a column of data. Makes a call
+         * to {@link #entropy(DataTable.Column, Set) entropy()} for each
+         * <i>outcome</i> of {@code attrColumn}.
+         *
+         * @param systemEntropy the total entropy of the {@code resultColumn}
+         * @param attrColumn    the column whose gain in entropy is being evaluated
+         * @param resultColumn  the column of a table that holds {@code successVals}
+         * @param successVals   the data values that should count as a success
+         * @param <A>           the data type held by the {@code attrColumn}
+         * @param <B>           the data type held by the {@code resultColumn}
+         * @return a number between 0 (<i>no entropy</i>) and 1 (<i>maximum entropy</i>)
+         */
+        public static <A, B> double gain(
+                double systemEntropy,
+                @NotNull DataTable.Column<A> attrColumn,
+                @NotNull DataTable.Column<B> resultColumn,
+                @NotNull Set<B> successVals) {
 
-            DataTable.Column<?> testColumn = table.getColumns().get(testColIndex);
+            // make sure both columns have the same number of rows...
 
-            @SuppressWarnings("unchecked")
-            Map<Object, Integer> outcomeCounts =
-                    (Map<Object, Integer>) testColumn.getCounts();
-
-            for (Object value : testColumn.getValues()) {
-
-                DataTable outcomeTable = table.toSubTable(testColumn, e -> e.equals(value));
-
-                @SuppressWarnings("unchecked")
-                DataTable.Column<T> outcomeResults =
-                        outcomeTable.getColumns().get(resultsColIndex);
-
-                int px = outcomeCounts.get(value) / outcomeResults.getRows().size();
-
-                entropy -= (px * entropy(outcomeResults, successVals));
+            if (attrColumn.getRows().size() != resultColumn.getRows().size()) {
+                throw new IllegalArgumentException(String.format(
+                        "testColumn and resultColumn row mismatch. (%d and %d)",
+                        attrColumn.getRows().size(), resultColumn.getRows().size()));
             }
-            return entropy;
+
+            // for each outcome in the attribute column...
+
+            Map<A, Integer> outcomeCounts = attrColumn.getCounts();
+            for (A value : outcomeCounts.keySet()) {
+
+                // subtract the proportional entropy of that outcome from 'entropy'...
+
+                List<Integer> outcomeIndices = attrColumn.toSubColumnIndices(e -> e.equals(value));
+                DataTable.Column<B> outcomeResultColumn = resultColumn.toSubColumn(outcomeIndices);
+                double px = outcomeCounts.get(value) / (double) outcomeIndices.size();
+
+                systemEntropy -= (px * entropy(outcomeResultColumn, successVals));
+            }
+            return systemEntropy;
         }
 
         /**
