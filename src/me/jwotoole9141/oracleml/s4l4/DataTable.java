@@ -494,7 +494,6 @@ public class DataTable {
         }
 
         return diagram.toString();
-
     }
 
     /**
@@ -632,7 +631,7 @@ public class DataTable {
             // parse columns...
 
             List<Column> columns = new ArrayList<>();
-            for (String label : data.keySet()) {
+            for (String label : header) {
                 columns.add(new Column<>(label, data.get(label)));
             }
 
