@@ -14,6 +14,7 @@ package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class Tree {
@@ -44,10 +45,10 @@ public class Tree {
             @NotNull Function<Object, A>[] toAnswerByCol)
             throws IllegalArgumentException {
 
-        DataTable.Column results = table.getColumns().get(resultColIndex);
         NodeInner<Q, A> tree = new NodeInner<>(toQuestion.apply(table.getTitle()));
-        algorithm.branch(tree, table, results, toQuestion, toAnswerByCol);
-        return tree;
+        DataTable.Column results = table.getColumns().get(resultColIndex);
+        algorithm.branch(tree, table.toSubTable(col -> col != results), results, toQuestion, toAnswerByCol);
+        return tree;  // FIXME
     }
 
     /**
@@ -65,12 +66,25 @@ public class Tree {
             public <Q, A> void branch(
                     @NotNull Node<Q, A> node,
                     @NotNull DataTable table,
-                    @NotNull DataTable.Column results,
+                    int resultColIndex,
                     @NotNull Function<String, Q> toQuestion,
                     @NotNull Function<Object, A>[] toAnswerByCol)
                     throws IllegalArgumentException {
 
-                // TODO ID3 ALGORITHM
+                if (table.getNumCells() == 0) {
+                    return;
+                }
+
+                @SuppressWarnings("unchecked")
+                Map<Object, Double> valueDistr = results.getDistribution();
+
+                for (Object value : valueDistr.keySet()) {
+                    double distr = valueDistr.get(value);
+                    if (distr == 0 || distr == 1) {
+
+                        // node.result = px
+                    }
+                }
             }
         };
 
@@ -78,22 +92,44 @@ public class Tree {
          * Mutates the given node into a tree that
          * dichotomises the given table of data.
          *
-         * @param node          the node to branch
-         * @param table         the table to branch with
-         * @param results       the key column of the given table
-         * @param toQuestion    a function that takes the label of columns in
-         *                      the table and returns an object of type {@link Q}
-         * @param toAnswerByCol an array of functions, one per column in the table, that each
-         *                      take data from the table and return an object of type {@link A}
-         * @param <Q>           the <i>question</i> type of the given node
-         * @param <A>           the <i>answer</i> type of the given node
+         * @param node           the node to branch
+         * @param table          the table to branch with
+         * @param resultColIndex the column index of the table's <i>final answers</i>
+         * @param toQuestion     a function that takes the label of columns in
+         *                       the table and returns an object of type {@link Q}
+         * @param toAnswerByCol  an array of functions, one per column in the table, that each
+         *                       take data from the table and return an object of type {@link A}
+         * @param <Q>            the <i>question</i> type of the given node
+         * @param <A>            the <i>answer</i> type of the given node
          */
         public abstract <Q, A> void branch(
                 @NotNull Node<Q, A> node,
                 @NotNull DataTable table,
-                @NotNull DataTable.Column results,
+                int resultColIndex,
                 @NotNull Function<String, Q> toQuestion,
                 @NotNull Function<Object, A>[] toAnswerByCol)
                 throws IllegalArgumentException;
+
+        public static <T> double entropy(DataTable table, int testColIndex, T successVal) {
+
+            DataTable.Column tests = table.getColumns().get(testColIndex);
+
+            int testsTrue = 0;
+            for (int i = 0; i < table.getNumRows(); i++) {
+
+                if (tests.getRows().get(i).equals(successVal)) {
+                    testsTrue++;
+                }
+            }
+            double px = testsTrue / (double) table.getNumRows();
+            double pk = 1.0 - px;
+
+            return (0 - (px * Math.log(px)) - (pk * Math.log(pk))) / LOG_2;
+        }
+
+        /**
+         * The natural logarithm of 2.
+         */
+        public static final double LOG_2 = Math.log(2);
     }
 }
