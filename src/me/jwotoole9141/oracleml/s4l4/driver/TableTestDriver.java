@@ -19,8 +19,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * Tests the {@link DataTable} and {@link DataTable.Column} classes.
+ *
+ * @author Jared O'Toole
+ */
 public class TableTestDriver {
 
+    /**
+     * Runs the test driver.
+     *
+     * @param args unused command-line args
+     */
     public static void main(String[] args)
             throws IOException, CsvValidationException {
 
@@ -28,6 +38,9 @@ public class TableTestDriver {
 
         File csv = new File(new File("").getParent(), "res/play_sport.csv");
         DataTable table = DataTable.fromCsvFile(csv);
+
+        System.out.println("\nTesting empty diagram...");
+        System.out.println(new DataTable("nill").toDiagram());
 
         System.out.println("\nTesting toString()...");
         System.out.println(table);
@@ -59,10 +72,15 @@ public class TableTestDriver {
         System.out.println("\nTesting creating a table...");
         System.out.println(myTable.toDiagram());
 
+        @SuppressWarnings("unchecked")
+        DataTable.Column<SkillLevel> planetsCol = myTable.getColumns().get(0);
+
         System.out.println("\nTesting col.toDiagram()");
-        System.out.println(myTable.getColumns().get(0).toDiagram());
+        System.out.println(planetsCol.toDiagram());
 
         // test saving a table to a CSV file...
+
+        myTable.toCsv();
 
         myTable.toCsv(
                 Object::toString,
@@ -82,10 +100,34 @@ public class TableTestDriver {
 
         // test various ways of getting sub-views...
 
+        DataTable excellence = myTable.toSubTable(c -> c.equals(planetsCol)
+                || c.getValues().contains(SkillLevel.EXCELLENT));
+
+        System.out.println("\nTesting toSubTable(columnFilter)...");
+        System.out.println(excellence.toDiagram());
+
+        @SuppressWarnings({ "unchecked", "OptionalGetWithoutIsPresent" })
+        DataTable.Column<SkillLevel> triviaCol = myTable.getColumns().stream()
+                .filter(c -> c.getLabel().equals("trivia")).findFirst().get();
+
+        DataTable poorAtTrivia = myTable.toSubTable(triviaCol, e -> e.equals(SkillLevel.NONE));
+
+        System.out.println("\nTesting toSubTable(filterColumn, rowFilter)...");
+        System.out.println(poorAtTrivia.toDiagram());
+
+        DataTable subView = myTable.toSubTable(Arrays.asList(0, 1, 2), Arrays.asList(0, 1, 2, 3, 6, 7));
+
+        System.out.println("\nTesting toSubTable(colIndices, rowIndices)...");
+        System.out.println(subView.toDiagram());
     }
 
+    /**
+     * An enumeration of discrete labels for
+     * different levels of skill.
+     */
     enum SkillLevel {
-        NONE, POOR, MEDIUM, HIGH, EXCELLENT;
+
+        NONE, POOR, MEDIUM, HIGH, EXCELLENT
     }
 
     /**
