@@ -121,7 +121,7 @@ public class DataTable {
          */
         public @NotNull Map<T, Double> getDistribution(@NotNull Set<T> values) {
 
-            Map<T, Integer> counts = getCount(values);
+            Map<T, Integer> counts = getCounts(values);
             Map<T, Double> distr = new HashMap<>();
 
             for (T value : counts.keySet()) {
@@ -135,8 +135,8 @@ public class DataTable {
          *
          * @return a map of the unique data values to their number of occurances
          */
-        public Map<T, Integer> getCount() {
-            return getCount(values);
+        public Map<T, Integer> getCounts() {
+            return getCounts(values);
         }
 
         /**
@@ -145,7 +145,7 @@ public class DataTable {
          * @param values the set of data values to get counts for
          * @return a map of the data values to their number of occurances
          */
-        public Map<T, Integer> getCount(Set<T> values) {
+        public Map<T, Integer> getCounts(Set<T> values) {
 
             Map<T, Integer> counts = new HashMap<>();
             for (T value : rows) {
