@@ -14,12 +14,17 @@ package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
+/**
+ * A utility class for building trees using the {@link Node} class
+ * and {@link DataTable} class.
+ *
+ * @author Jared O'Toole
+ * @see Algorithm
+ * @see #fromTable
+ */
 public class Tree {
 
     /**
@@ -30,40 +35,40 @@ public class Tree {
      * ordering</i> of questions.
      *
      * @param table          a table of data
-     * @param resultColIndex the column index of the table's <i>final answers</i>
-     * @param successVals    the values that should count as a success
+     * @param resultsKey     the label of the column in {@code table} that holds {@code successVals}
+     * @param successVals    the data values that should count as a successful <i>final answer</i> to the table
      * @param algorithm      the algorithm to build the tree with
-     * @param toQuestion     a function that takes the title of the table or the label
+     * @param toQuestionFunc a function that takes the title of the table or the label
      *                       of one of its columns and returns an object of type {@link Q}
-     * @param toAnswerByCol  an array of functions, one per column in the table, that each
+     * @param toAnswerFuncs  an array of functions, one per column in the table, that each
      *                       take data from the table and return an object of type {@link A}
+     * @param defaultAnswer  the default answer to use for a node if there is no data
      * @param <Q>            the <i>question</i> type of the tree
-     * @param <T>            the type of data held by the result column
+     * @param <T>            the type of data held by the result column of {@code table}
      * @param <A>            the <i>answer</i> type of the tree
      * @return a tree model that categorizes the given data
+     *
+     * @throws IllegalArgumentException if {@code table} does not contain a column labled {@code resultsKey}
+     * @throws ClassCastException       if data held by the column labeled {@code resultsKey} isn't {@link T}
      */
     public static <Q, A, T> @NotNull Node<Q, A> fromTable(
             @NotNull DataTable table,
-            int resultColIndex,
+            String resultsKey,
             Set<T> successVals,
             @NotNull Algorithm algorithm,
-            @NotNull Function<String, Q> toQuestion,
-            @NotNull Function<Object, A>[] toAnswerByCol)
-            throws IllegalArgumentException {
+            @NotNull Function<String, Q> toQuestionFunc,
+            @NotNull Map<String, Function<Object, A>> toAnswerFuncs,
+            A defaultAnswer)
+            throws IllegalArgumentException, ClassCastException {
 
-        NodeInner<Q, A> tree = new NodeInner<>(toQuestion.apply(table.getTitle()));
-        DataTable.Column results = table.getColumns().get(resultColIndex);
-
-        algorithm.branch(tree, table.toSubTable(
-                col -> col != results), resultColIndex,
-                successVals, toQuestion, toAnswerByCol);
+        NodeInner<Q, A> tree = new NodeInner<>(toQuestionFunc.apply(table.getTitle()));
+        algorithm.branch(tree, table, resultsKey, successVals, toQuestionFunc, toAnswerFuncs, defaultAnswer);
         return tree;
     }
 
     /**
      * An enumeration of tree building algorithms that can
-     * be used with {@link #fromTable(DataTable, int, Set,
-     * Algorithm, Function, Function[])} Tree.fromTable()}.
+     * be used with {@link #fromTable Tree.fromTable()}.
      */
     public enum Algorithm {
 
@@ -75,78 +80,128 @@ public class Tree {
             public <Q, A, T> void branch(
                     @NotNull NodeInner<Q, A> node,
                     @NotNull DataTable table,
-                    int resultColIndex,
+                    @NotNull String resultsKey,
                     Set<T> successVals,
-                    @NotNull Function<String, Q> toQuestion,
-                    @NotNull Function<Object, A>[] toAnswerByCol)
-                    throws IllegalArgumentException {
+                    @NotNull Function<String, Q> toQuestionFunc,
+                    @NotNull Map<String, Function<Object, A>> toAnswerFuncs,
+                    @NotNull A defaultAnswer)
+                    throws IllegalArgumentException, ClassCastException {
 
                 // TODO 1. testing 2. refactoring
 
-                if (table.getNumCells() == 0) {
-
-                    // FIXME should also check for a table
-                    //   with only the result column
-
-                    throw new IllegalArgumentException("Empty table given...");
+                if (table.getNumCols() == 1 /* just results col */ || table.getNumRows() == 0) {
+                    return;
                 }
+
+                // calculate system entropy using the results column...
 
                 //noinspection unchecked
-                DataTable.Column<T> resultCol = table.getColumns().get(resultColIndex);
+                DataTable.Column<T> resultsCol = (DataTable.Column<T>) table.getColumns().stream()
+                        .filter(col -> col.getLabel().equals(resultsKey))
+                        .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format(
+                                "The given table does not contain a column labeled '%s'", resultsKey)));
 
-                double systemEntropy = entropy(resultCol, successVals);
-                Map<DataTable.Column<Object>, Double> gains = new HashMap<>();
+                double systemEntropy = entropy(resultsCol, successVals);
+                Map<DataTable.Column<?>, Double> gains = new HashMap<>();
 
-                //noinspection unchecked
-                for (DataTable.Column<Object> column : table.getColumns()) {
-                    if (column == resultCol) {
-                        continue;
-                    }
-                    gains.put(column, gain(systemEntropy, column, resultCol, successVals));
-                }
-                double highestGain = 0;
-                DataTable.Column<Object> bestAttr = null;
+                // calculate the gains of every other column...
 
-                for (DataTable.Column<Object> attr : gains.keySet()) {
-                    double entropyGain = gains.get(attr);
-                    if (entropyGain > highestGain) {
-                        highestGain = entropyGain;
-                        bestAttr = attr;
+                for (DataTable.Column<?> column : table.getColumns()) {
+                    if (column != resultsCol) {
+                        gains.put(column, gain(
+                                systemEntropy, column,
+                                resultsCol, successVals));
                     }
                 }
-                assert bestAttr != null;
 
-                DataTable.Column<Object> attrCol = bestAttr;
-                int attrColIndex = table.getColumns().indexOf(attrCol);
+                // choose the column with the highest gain...
+
+                final DataTable.Column<?> attrCol;
+                int attrColIndex;
+                {
+                    double highestGain = 0;
+                    DataTable.Column<?> bestAttr = null;
+
+                    for (DataTable.Column<?> attr : gains.keySet()) {
+                        double entropyGain = gains.get(attr);
+                        if (entropyGain > highestGain) {
+                            highestGain = entropyGain;
+                            bestAttr = attr;
+                        }
+                    }
+                    assert bestAttr != null;
+
+                    attrColIndex = table.getColumns().indexOf(bestAttr);
+                    attrCol = bestAttr;
+                }
+
+                // for each unique value under the chosen column...
+
+                /* gets a sub-table without the attr column-- we dont need it when branching further */
                 DataTable slicedTable = table.toSubTable(col -> col != attrCol);
 
                 for (Object value : attrCol.getValues()) {
 
+                    /* gets a sub-table with only the rows containing 'value' */
                     DataTable subTable = slicedTable.toSubTable(attrCol, e -> e.equals(value));
 
-                    NodeOuter<Q, A> leafChild = null;
+                    // TODO duplicated code
+                    //noinspection unchecked
+                    DataTable.Column<T> subResultsCol = (DataTable.Column<T>) table.getColumns().stream()
+                            .filter(col -> col.getLabel().equals(resultsKey))
+                            .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format(
+                                    "The given table does not contain a column labeled '%s'", resultsKey)));
 
-                    if ((subTable.getColumns().size() - 1) == 0) {
-                        leafChild = new NodeOuter<>(toAnswerByCol[attrColIndex].apply(null));  // FIXME apply(null) okay??
+                    if (subTable.getColumns().size() == 1 /* just results col */) {
+
+                        // if there are no other columns left, end the tree with the most commun result..
+
+                        T mostCommonResult = subResultsCol.getCounts().entrySet().stream()
+                                .max(Comparator.comparingInt(Map.Entry::getValue))
+                                .map(Map.Entry::getKey).orElse(null);
+
+                        A answer = toAnswerFuncs.get(attrCol.getLabel()).apply(value);
+                        A finalAnswer = mostCommonResult == null
+                                ? defaultAnswer
+                                : toAnswerFuncs.get(subResultsCol.getLabel()).apply(mostCommonResult);
+
+                        // BASE CASE
+
+                        node.getChildren().put(answer, new NodeOuter<>(finalAnswer));
+                        return;
                     }
                     else {
-                        //noinspection unchecked
-                        resultCol = subTable.getColumns().get(resultColIndex);
-                        Map<T, Integer> resultSuccessCounts = resultCol.getCounts(successVals);
+
+                        // else, if there is no entropy left, end the tree with the unanimous result...
+
+                        Map<T, Integer> resultSuccessCounts = resultsCol.getCounts(successVals);
                         for (T successVal : resultSuccessCounts.keySet()) {
 
                             int count = resultSuccessCounts.get(successVal);
-                            if (count == 0 || count == resultCol.getRows().size()) {
-                                leafChild = new NodeOuter<>(toAnswerByCol[attrColIndex].apply(successVal));
-                                break;
+                            if (count == 0 || count == resultsCol.getRows().size()) {
+
+                                A answer = toAnswerFuncs.get(attrCol.getLabel()).apply(value);
+                                A finalAnswer = toAnswerFuncs.get(subResultsCol.getLabel()).apply(successVal);
+
+                                // BASE CASE
+
+                                node.getChildren().put(answer, new NodeOuter<>(finalAnswer));
+                                return;
                             }
                         }
-                    }
 
-                    if (leafChild == null) {
+                        // else, branch on this sub table...
 
-                        NodeInner<Q, A> childNode = new NodeInner<>(toQuestion.apply(attrCol.getLabel()));
-                        branch(childNode, subTable, resultColIndex, successVals, toQuestion, toAnswerByCol);
+                        A answer = toAnswerFuncs.get(attrCol.getLabel()).apply(value);
+                        Q question = toQuestionFunc.apply(attrCol.getLabel());
+                        NodeInner<Q, A> child = new NodeInner<>(question);
+                        node.getChildren().put(answer, child);
+
+                        // RECURSIVE CASE
+
+                        branch(child, subTable, resultsKey, successVals,
+                                toQuestionFunc, toAnswerFuncs, defaultAnswer);
+                        return;
                     }
                 }
             }
@@ -158,24 +213,27 @@ public class Tree {
          *
          * @param node           the node to branch
          * @param table          the table to branch with
-         * @param resultColIndex the column index of the table's <i>final answers</i>
-         * @param successVals    the values that should count as a success
-         * @param toQuestion     a function that takes the label of columns in
-         *                       the table and returns an object of type {@link Q}
-         * @param toAnswerByCol  an array of functions, one per column in the table, that each
-         *                       take data from the table and return an object of type {@link A}
+         * @param resultsKey     the label of the column in {@code table} that holds {@code successVals}
+         * @param successVals    the data values that should count as a successful <i>final answer</i> to the table
+         * @param toQuestionFunc a function that takes the label of columns in {@code table} and returns a {@link Q}
+         * @param toAnswerFuncs  a map of column labels to functions that each take data from their column
+         * @param defaultAnswer  the default answer to use for a node if there is no data
+         *                       in {@code table} and return an {@link A}
          * @param <Q>            the <i>question</i> type of the given node
-         * @param <T>            the type of data held by the result column
+         * @param <T>            the type of data held by the result column of {@code table}
          * @param <A>            the <i>answer</i> type of the given node
+         * @throws IllegalArgumentException if {@code table} does not contain a column labled {@code resultsKey}
+         * @throws ClassCastException       if data held by the column labeled {@code resultsKey} isn't {@link T}
          */
         public abstract <Q, A, T> void branch(
                 @NotNull NodeInner<Q, A> node,
                 @NotNull DataTable table,
-                int resultColIndex,
+                @NotNull String resultsKey,
                 Set<T> successVals,
-                @NotNull Function<String, Q> toQuestion,
-                @NotNull Function<Object, A>[] toAnswerByCol)
-                throws IllegalArgumentException;
+                @NotNull Function<String, Q> toQuestionFunc,
+                @NotNull Map<String, Function<Object, A>> toAnswerFuncs,
+                @NotNull A defaultAnswer)
+                throws IllegalArgumentException, ClassCastException;
 
         /**
          * Calculates the entropy of a column of data. Each datum is
