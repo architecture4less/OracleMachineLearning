@@ -73,7 +73,7 @@ public class TableTestDriver {
         System.out.println(myTable.toDiagram());
 
         @SuppressWarnings("unchecked")
-        DataTable.Column<SkillLevel> planetsCol = myTable.getColumns().get(0);
+        DataTable.Column<SkillLevel> planetsCol = (DataTable.Column<SkillLevel>) myTable.getColumns().get(0);
 
         System.out.println("\nTesting col.toDiagram()");
         System.out.println(planetsCol.toDiagram());
@@ -107,7 +107,7 @@ public class TableTestDriver {
         System.out.println(excellence.toDiagram());
 
         @SuppressWarnings({ "unchecked", "OptionalGetWithoutIsPresent" })
-        DataTable.Column<SkillLevel> triviaCol = myTable.getColumns().stream()
+        DataTable.Column<SkillLevel> triviaCol = (DataTable.Column<SkillLevel>) myTable.getColumns().stream()
                 .filter(c -> c.getLabel().equals("trivia")).findFirst().get();
 
         DataTable poorAtTrivia = myTable.toSubTable(triviaCol, e -> e.equals(SkillLevel.NONE));
