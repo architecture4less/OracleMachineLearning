@@ -12,19 +12,21 @@
 
 package me.jwotoole9141.oracleml.s4l4.driver;
 
+import com.opencsv.exceptions.CsvValidationException;
 import me.jwotoole9141.oracleml.s4l4.DataTable;
+import me.jwotoole9141.oracleml.s4l4.Node;
 import me.jwotoole9141.oracleml.s4l4.Tree;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ID3TestDriver {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, CsvValidationException {
 
         // create sample data...
 
@@ -69,6 +71,28 @@ public class ID3TestDriver {
         double flipGainOnGrade = Tree.Algorithm.gain(testGradeEntropy, coinFlipCol, testGradeCol, testTrueCriteria);
         System.out.printf("The gain of '%s' on '%s' is: %f\n",
                 coinFlipCol.getLabel(), testGradeCol.getLabel(), flipGainOnGrade);
+
+        // testing the id3 algorithm...
+
+        File csv = new File(new File("").getParent(), "res/play_sport.csv");
+        DataTable playSportTable = DataTable.fromCsvFile(csv);
+
+        Function[] toAnswerByCol = new Function[playSportTable.getNumCols()];
+        for (int i = 0; i < toAnswerByCol.length; i++) {
+            toAnswerByCol[i] = Object::toString;
+        }
+
+        //noinspection unchecked
+        Node<String, String> playSportTree = Tree.fromTable(
+                playSportTable,
+                playSportTable.getNumCols() - 1,  // FIXME index out of bounds exception
+                Collections.singleton("No"),
+                Tree.Algorithm.ID3,
+                Object::toString,
+                toAnswerByCol);
+
+        System.out.println("\nTesting Tree.fromTable()...");
+        System.out.println(playSportTable.toDiagram());
     }
 
     public enum CoinFlip {HEADS, TAILS}
