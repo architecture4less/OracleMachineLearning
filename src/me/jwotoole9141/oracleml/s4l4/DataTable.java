@@ -276,8 +276,8 @@ public class DataTable {
     private final int numRows;
     private final int size;
 
-    private final @NotNull List<@NotNull Column> cols = new ArrayList<>();
-    private final @NotNull List<@NotNull Column> colsView = Collections.unmodifiableList(cols);
+    private final @NotNull List<@NotNull Column<?>> cols = new ArrayList<>();
+    private final @NotNull List<@NotNull Column<?>> colsView = Collections.unmodifiableList(cols);
 
     /**
      * Creates an empty data table with the given title.
@@ -297,7 +297,7 @@ public class DataTable {
      * @throws IllegalArgumentException if the number of rows between
      *                                  all columns are not equal
      */
-    public DataTable(@NotNull String title, @Nullable List<Column> columns) {
+    public DataTable(@NotNull String title, @Nullable List<Column<?>> columns) {
 
         this.title = title;
 
@@ -337,7 +337,7 @@ public class DataTable {
      *
      * @return an unmodifiable list
      */
-    public @NotNull List<Column> getColumns() {
+    public @NotNull List<Column<?>> getColumns() {
         return colsView;
     }
 
@@ -382,7 +382,7 @@ public class DataTable {
      *                     true if it should be included in the <i>sub-view</i>
      * @return a new table with a subset of the same data
      */
-    public @NotNull DataTable toSubTable(@NotNull Predicate<Column> columnFilter) {
+    public @NotNull DataTable toSubTable(@NotNull Predicate<Column<?>> columnFilter) {
         return new DataTable(title, cols.stream()
                 .filter(columnFilter)
                 .collect(Collectors.toList()));
@@ -421,7 +421,7 @@ public class DataTable {
     public @NotNull DataTable toSubTable(
             @Nullable List<Integer> colIndices, @Nullable List<Integer> rowIndices) {
 
-        List<Column> columns = new ArrayList<>();
+        List<Column<?>> columns = new ArrayList<>();
 
         IntStream colRange = (colIndices == null)
                 ? IntStream.range(0, numCols)
@@ -458,7 +458,7 @@ public class DataTable {
         // serialize all the data under the column...
 
         List<List<String>> colRowStrings = new ArrayList<>();
-        for (Column column : cols) {
+        for (Column<?> column : cols) {
             List<String> rowStrings = new ArrayList<>();
             for (Object elem : column.rows) {
                 rowStrings.add(elem.toString());
@@ -662,7 +662,7 @@ public class DataTable {
 
             // parse columns...
 
-            List<Column> columns = new ArrayList<>();
+            List<Column<?>> columns = new ArrayList<>();
             for (String label : header) {
                 columns.add(new Column<>(label, data.get(label)));
             }
