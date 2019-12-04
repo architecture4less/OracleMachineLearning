@@ -56,17 +56,36 @@ public class TableTestDriver {
                         SkillLevel.POOR, SkillLevel.MEDIUM, SkillLevel.EXCELLENT, SkillLevel.NONE))
 
         ));
-        System.out.println("Testing creating a table...");
+        System.out.println("\nTesting creating a table...");
         System.out.println(myTable.toDiagram());
 
+        System.out.println("\nTesting col.toDiagram()");
+        System.out.println(myTable.getColumns().get(0).toDiagram());
+
         // test saving a table to a CSV file...
+
+        myTable.toCsv(
+                Object::toString,
+                Object::toString,
+                Object::toString,
+                Object::toString);
+
+        File myCsv = new File(new File("").getParent(), myTable.getTitle());
+        DataTable reloadedTable = DataTable.fromCsvFile(myCsv,
+                Planet::valueOf,
+                SkillLevel::valueOf,
+                SkillLevel::valueOf,
+                SkillLevel::valueOf);
+
+        System.out.println("\nTesting saving to file and reloading... ");
+        System.out.println(reloadedTable.toDiagram());
 
         // test various ways of getting sub-views...
 
     }
 
     enum SkillLevel {
-        NONE, POOR, MEDIUM, HIGH, EXCELLENT
+        NONE, POOR, MEDIUM, HIGH, EXCELLENT;
     }
 
     /**
