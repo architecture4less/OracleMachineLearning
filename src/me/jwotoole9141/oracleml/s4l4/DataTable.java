@@ -228,7 +228,10 @@ public class DataTable {
 
             // create a row format specifier...
 
-            int maxCellWidth = rowStrings.stream()
+            List<String> rowStringsPlus = new ArrayList<>(rowStrings);
+            rowStringsPlus.add(label);
+
+            int maxCellWidth = rowStringsPlus.stream()
                     .map(String::length)
                     .max(Integer::compare).orElse(0);
 
