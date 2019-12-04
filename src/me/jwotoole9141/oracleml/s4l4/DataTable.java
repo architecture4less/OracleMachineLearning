@@ -158,8 +158,8 @@ public class DataTable {
          */
         public @NotNull Column<T> toSubColumn(@NotNull List<Integer> indices) {
             return new Column<>(label, indices.stream()
-                            .map(rows::get)
-                            .collect(Collectors.toList()));
+                    .map(rows::get)
+                    .collect(Collectors.toList()));
         }
 
         /**
@@ -193,16 +193,14 @@ public class DataTable {
         /**
          * Creates a string diagram representing this column and its data.
          *
-         * @param dataSerializer a function that takes a datum from this column's rows
-         *                       and serializes it to a string  # TODO
-         * @return
+         * @return a visual, multi-line string
          */
-        public String toDiagram(Function<T, String> dataSerializer) {
+        public String toDiagram() {
 
             // serialize all the data under the column...
 
             List<String> rowStrings = rows.stream()
-                    .map(e -> dataSerializer.apply(e))
+                    .map(T::toString)
                     .collect(Collectors.toList());
 
             // create a row format specifier...
@@ -211,8 +209,14 @@ public class DataTable {
                     .map(String::length)
                     .max(Integer::compare).orElse(0);
 
-            String cellFormat = "%< " + maxCellWidth + "s";
-            String rowFormat = String.format("|%1$s|%1$s|%n", cellFormat);
+            int rowNumCellWidth = String.valueOf(rows.size()).length();
+
+            String colDivider = "|";
+            String cellFormat = "%-" + maxCellWidth + "s";
+            String rowNumCellFormat = "%-" + rowNumCellWidth + "s";
+
+            String rowFormat = String.format("|%s|%n", String.join(
+                    colDivider, rowNumCellFormat, cellFormat));
 
             // add the header...
 
@@ -221,9 +225,12 @@ public class DataTable {
 
             // add a divider...
 
-            for (int i = 0; i < (maxCellWidth * 2) + 3; i++) {
+            int totalWidth = 1 + rowNumCellWidth + colDivider.length() + maxCellWidth + 1;
+
+            for (int i = 0; i < totalWidth; i++) {
                 diagram.append("-");
             }
+            diagram.append(String.format("%n"));
 
             // add each row of data...
 
@@ -231,6 +238,8 @@ public class DataTable {
                 diagram.append(String.format(rowFormat,
                         String.valueOf(i), rowStrings.get(i)));
             }
+
+            return diagram.toString();
         }
     }
 
@@ -409,6 +418,73 @@ public class DataTable {
                 size, cols.stream()
                         .map(Column::toString)
                         .collect(Collectors.joining(", ")));
+    }
+
+    /**
+     * Creates a string diagram representing this table and its data.
+     *
+     * @return a visual, multi-line string
+     */
+    public String toDiagram() {
+
+        // serialize all the data under the column...
+
+        List<List<String>> colRowStrings = new ArrayList<>();
+        for (Column column : cols) {
+            List<String> rowStrings = new ArrayList<>();
+            for (Object elem : column.rows) {
+                rowStrings.add(elem.toString());
+            }
+            colRowStrings.add(rowStrings);
+        }
+
+        // create a row format specifier...
+
+        List<Integer> maxCellWidths = new ArrayList<>();
+        for (List<String> rowStrings : colRowStrings) {
+            maxCellWidths.add(rowStrings.stream()
+                    .map(String::length)
+                    .max(Integer::compare).orElse(0));
+        }
+        int rowNumCellWidth = String.valueOf(numRows).length();
+
+        String colDivider = "|";
+        List<String> cellFormats = maxCellWidths.stream().map(i -> "%-" + i + "s").collect(Collectors.toList());
+        cellFormats.add(0, "%-" + rowNumCellWidth + "s");
+
+        String rowFormat = String.format("|%s|%n", String.join(colDivider, cellFormats));
+
+        // add the header...
+
+        List<String> headerElems = cols.stream().map(Column::getLabel).collect(Collectors.toList());
+        headerElems.add(0, "row");
+        StringBuilder diagram = new StringBuilder(String.format(
+                rowFormat, headerElems.toArray()));
+
+        // add a divider...
+
+        int tableWidth = 1 + rowNumCellWidth + maxCellWidths.stream().mapToInt(Integer::valueOf).sum()
+                + ((cellFormats.size() - 1) * colDivider.length()) + 1;
+
+        for (int i = 0; i < tableWidth; i++) {
+            diagram.append("-");
+        }
+        diagram.append(String.format("%n"));
+
+        // add each row of data...
+
+        for (int i = 0; i < numRows; i++) {
+
+            List<String> row = new ArrayList<>();
+            row.add(String.valueOf(i));
+            for (List<String> rowStrings : colRowStrings) {
+                row.add(rowStrings.get(i));
+            }
+            diagram.append(String.format(rowFormat, row.toArray()));
+        }
+
+        return diagram.toString();
+
     }
 
     /**

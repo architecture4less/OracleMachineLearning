@@ -12,9 +12,24 @@
 
 package me.jwotoole9141.oracleml.s4l4.driver;
 
+import com.opencsv.exceptions.CsvValidationException;
+import me.jwotoole9141.oracleml.s4l4.DataTable;
+
+import java.io.File;
+import java.io.IOException;
+
 public class TableTestDriver {
 
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+    public static void main(String[] args)
+            throws IOException, CsvValidationException {
+
+        File csv = new File(new File("").getParent(), "res/play_sport.csv");
+        DataTable table = DataTable.fromCsvFile(csv);
+
+        System.out.println("\nTesting toString()...");
+        System.out.println(table);
+
+        System.out.println("\nTesting toDiagram()...");
+        System.out.println(table.toDiagram());
     }
 }
