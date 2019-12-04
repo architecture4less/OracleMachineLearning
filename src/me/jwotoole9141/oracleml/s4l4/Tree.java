@@ -15,6 +15,7 @@ package me.jwotoole9141.oracleml.s4l4;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 public class Tree {
@@ -110,21 +111,60 @@ public class Tree {
                 @NotNull Function<Object, A>[] toAnswerByCol)
                 throws IllegalArgumentException;
 
-        public static <T> double entropy(DataTable table, int testColIndex, T successVal) {
+        /**
+         * Gets the entropy of a column of data. Each datum is
+         * classified as either a success or not, first.
+         *
+         * @param results     the column of a table that holds {@code successVals}
+         * @param successVals the data values that should count as a success
+         * @param <T>         the data type held by the given column
+         * @return a number between 0 (<i>no entropy</i>) and 1 (<i>maximum entropy</i>)
+         */
+        public static <T> double entropy(
+                @NotNull DataTable.Column<T> results,
+                @NotNull Set<T> successVals) {
 
-            DataTable.Column tests = table.getColumns().get(testColIndex);
+            // determine the probability of data being a success...
 
-            int testsTrue = 0;
-            for (int i = 0; i < table.getNumRows(); i++) {
+            int x = results.getCounts(successVals)
+                    .values().stream()
+                    .mapToInt(i -> (int) i)
+                    .sum();
 
-                if (tests.getRows().get(i).equals(successVal)) {
-                    testsTrue++;
-                }
-            }
-            double px = testsTrue / (double) table.getNumRows();
+            double px = x / (double) results.getRows().size();
             double pk = 1.0 - px;
 
+            // calculate the entropy of the data...
+
             return (0 - (px * Math.log(px)) - (pk * Math.log(pk))) / LOG_2;
+        }
+
+        public static <T> double gain(
+                double entropy,
+                @NotNull DataTable table,
+                int testColIndex,
+                int resultsColIndex,
+                @NotNull Set<T> successVals) {
+
+            DataTable.Column<?> testColumn = table.getColumns().get(testColIndex);
+
+            @SuppressWarnings("unchecked")
+            Map<Object, Integer> outcomeCounts =
+                    (Map<Object, Integer>) testColumn.getCounts();
+
+            for (Object value : testColumn.getValues()) {
+
+                DataTable outcomeTable = table.toSubTable(testColumn, e -> e.equals(value));
+
+                @SuppressWarnings("unchecked")
+                DataTable.Column<T> outcomeResults =
+                        outcomeTable.getColumns().get(resultsColIndex);
+
+                int px = outcomeCounts.get(value) / outcomeResults.getRows().size();
+
+                entropy -= (px * entropy(outcomeResults, successVals));
+            }
+            return entropy;
         }
 
         /**
