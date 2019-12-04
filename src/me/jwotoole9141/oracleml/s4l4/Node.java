@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 /**
  * Represents a node in a non-binary tree. It should be cast to
- * either a {@link InnerNode} or a {@link OuterNode} when using.
+ * either a {@link NodeInner} or a {@link NodeOuter} when using.
  *
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
@@ -137,12 +137,12 @@ public abstract class Node<Q, A> {
 
                     children.put(answer, child);
                 }
-                return new InnerNode<>(question, children);
+                return new NodeInner<>(question, children);
             }
             else if (map.containsKey("answer")) {
 
                 A answer = answerFromStr.apply((String) map.get("answer"));
-                return new OuterNode<>(answer);
+                return new NodeOuter<>(answer);
             }
         }
         throw new IllegalArgumentException("Not enough data to build a node.");

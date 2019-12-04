@@ -12,9 +12,9 @@
 
 package me.jwotoole9141.oracleml.s4l4.driver;
 
-import me.jwotoole9141.oracleml.s4l4.InnerNode;
+import me.jwotoole9141.oracleml.s4l4.NodeInner;
 import me.jwotoole9141.oracleml.s4l4.Node;
-import me.jwotoole9141.oracleml.s4l4.OuterNode;
+import me.jwotoole9141.oracleml.s4l4.NodeOuter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Tests the {@link Node}, {@link InnerNode}, and {@link OuterNode} classes.
+ * Tests the {@link Node}, {@link NodeInner}, and {@link NodeOuter} classes.
  *
  * @author Jared O'Toole
  */
@@ -52,20 +52,20 @@ public class TreeTestDriver {
 
         String treeQuestion = "Play?";
 
-        InnerNode<String, String> tree = new InnerNode<>("Outlook?");
-        tree.getChildren().put("Sunny", new InnerNode<>("Humidity?"));
-        tree.getChildren().put("Overcast", new OuterNode<>("Yes"));
-        tree.getChildren().put("Rainy", new InnerNode<>("Wind?"));
+        NodeInner<String, String> tree = new NodeInner<>("Outlook?");
+        tree.getChildren().put("Sunny", new NodeInner<>("Humidity?"));
+        tree.getChildren().put("Overcast", new NodeOuter<>("Yes"));
+        tree.getChildren().put("Rainy", new NodeInner<>("Wind?"));
 
-        InnerNode<String, String> sunny =
-                (InnerNode<String, String>) tree.getChildren().get("Sunny");
-        sunny.getChildren().put("High", new OuterNode<>("No"));
-        sunny.getChildren().put("Normal", new OuterNode<>("Yes"));
+        NodeInner<String, String> sunny =
+                (NodeInner<String, String>) tree.getChildren().get("Sunny");
+        sunny.getChildren().put("High", new NodeOuter<>("No"));
+        sunny.getChildren().put("Normal", new NodeOuter<>("Yes"));
 
-        InnerNode<String, String> rainy =
-                (InnerNode<String, String>) tree.getChildren().get("Rainy");
-        rainy.getChildren().put("Strong", new OuterNode<>("No"));
-        rainy.getChildren().put("Weak", new OuterNode<>("Yes"));
+        NodeInner<String, String> rainy =
+                (NodeInner<String, String>) tree.getChildren().get("Rainy");
+        rainy.getChildren().put("Strong", new NodeOuter<>("No"));
+        rainy.getChildren().put("Weak", new NodeOuter<>("Yes"));
 
         // test functionality of the tree...
 
@@ -91,8 +91,8 @@ public class TreeTestDriver {
 
         Object newTreeMap = new JSONParser().parse(newTreeJson);
 
-        InnerNode<String, String> newTree =
-                (InnerNode<String, String>) Node.fromMap(newTreeMap, questionFromMap, Object::toString);
+        NodeInner<String, String> newTree =
+                (NodeInner<String, String>) Node.fromMap(newTreeMap, questionFromMap, Object::toString);
 
         System.out.println("\nTesting Node.fromMap()...");
         System.out.println(new JSONObject(tree

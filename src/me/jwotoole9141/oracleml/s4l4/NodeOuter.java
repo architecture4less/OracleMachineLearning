@@ -25,9 +25,9 @@ import java.util.function.Function;
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
- * @see InnerNode
+ * @see NodeInner
  */
-public class OuterNode<Q, A> extends Node<Q, A> {
+public class NodeOuter<Q, A> extends Node<Q, A> {
 
     protected @NotNull A answer;
 
@@ -36,7 +36,7 @@ public class OuterNode<Q, A> extends Node<Q, A> {
      *
      * @param answer the <i>final answer</i> to the premise of the entire tree
      */
-    public OuterNode(@NotNull A answer) {
+    public NodeOuter(@NotNull A answer) {
         super();
         this.answer = answer;
     }

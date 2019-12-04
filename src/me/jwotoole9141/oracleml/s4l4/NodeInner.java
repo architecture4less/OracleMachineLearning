@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
  * @param <Q> The <i>question</i> type in this node's heirarchy
  * @param <A> The <i>answer</i> type in this node's heirarchy
  * @author Jared O'Toole
- * @see OuterNode
+ * @see NodeOuter
  */
-public class InnerNode<Q, A> extends Node<Q, A> {
+public class NodeInner<Q, A> extends Node<Q, A> {
 
     protected @NotNull Q question;
     protected @NotNull ObservableMap<@NotNull A, @NotNull Node<Q, A>> children;
@@ -42,7 +42,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      *
      * @param question the premise of the node
      */
-    public InnerNode(@NotNull Q question) {
+    public NodeInner(@NotNull Q question) {
         this(question, null);
     }
 
@@ -52,7 +52,7 @@ public class InnerNode<Q, A> extends Node<Q, A> {
      * @param question the premise of the node
      * @param children a map of <i>answers</i> to <i>follow-up questions</i>
      */
-    public InnerNode(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node<Q, A>> children) {
+    public NodeInner(@NotNull Q question, @Nullable Map<@NotNull A, @NotNull Node<Q, A>> children) {
 
         super();
         this.question = question;
