@@ -102,6 +102,8 @@ public class Tree {
                                 "The given table does not contain a column labeled '%s'", resultsKey)));
 
                 double systemEntropy = entropy(resultsCol, successVals);
+
+                System.out.println("system entropy: " + systemEntropy);
                 Map<DataTable.Column<?>, Double> gains = new HashMap<>();
 
                 // calculate the gains of every other column...
@@ -122,17 +124,23 @@ public class Tree {
                     double highestGain = 0;
                     DataTable.Column<?> bestAttr = null;
 
+                    System.out.println("null pointer?");
+
                     for (DataTable.Column<?> attr : gains.keySet()) {
                         double entropyGain = gains.get(attr);
+                        System.out.println("  gain: " + entropyGain);
                         if (entropyGain > highestGain) {
                             highestGain = entropyGain;
                             bestAttr = attr;
                         }
                     }
+                    System.out.println(bestAttr);
                     assert bestAttr != null;
 
                     attrColIndex = table.getColumns().indexOf(bestAttr);
                     attrCol = bestAttr;
+
+                    System.out.println(bestAttr.toDiagram());
                 }
 
                 // for each unique value under the chosen column...
@@ -140,7 +148,9 @@ public class Tree {
                 /* gets a sub-table without the attr column-- we dont need it when branching further */
                 DataTable slicedTable = table.toSubTable(col -> col != attrCol);
 
-                for (Object value : attrCol.getValues()) {
+                System.out.println(attrCol);
+
+                for (Object value : attrCol.getValues()) {  // FIXME null pointer
 
                     /* gets a sub-table with only the rows containing 'value' */
                     DataTable subTable = slicedTable.toSubTable(attrCol, e -> e.equals(value));
@@ -301,7 +311,7 @@ public class Tree {
 
                 List<Integer> outcomeIndices = attrColumn.toSubColumnIndices(e -> e.equals(value));
                 DataTable.Column<B> outcomeResultColumn = resultColumn.toSubColumn(outcomeIndices);
-                double px = outcomeCounts.get(value) / (double) outcomeIndices.size();
+                double px = outcomeCounts.get(value) / (double) attrColumn.getRows().size();
 
                 systemEntropy -= (px * entropy(outcomeResultColumn, successVals));
             }
