@@ -139,7 +139,9 @@ public class Tree {
 
             // calculate the entropy of the data...
 
-            return (0 - (px * Math.log(px)) - (pk * Math.log(pk))) / LOG_2;
+            double result = (0 - (px * Math.log(px)) - (pk * Math.log(pk))) / LOG_2;
+
+            return Double.isNaN(result) ? 0 : result;  // logarithm domain
         }
 
         /**
