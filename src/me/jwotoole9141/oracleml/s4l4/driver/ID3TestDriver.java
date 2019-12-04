@@ -74,25 +74,27 @@ public class ID3TestDriver {
 
         // testing the id3 algorithm...
 
+        System.out.println("\nTesting Tree.fromTable()...");
+
         File csv = new File(new File("").getParent(), "res/play_sport.csv");
         DataTable playSportTable = DataTable.fromCsvFile(csv);
 
-        Function[] toAnswerByCol = new Function[playSportTable.getNumCols()];
-        for (int i = 0; i < toAnswerByCol.length; i++) {
-            toAnswerByCol[i] = Object::toString;
+        Map<String, Function<Object, String>> toAnswerFuncs = new HashMap<>();
+        for (DataTable.Column col : playSportTable.getColumns()) {
+            toAnswerFuncs.put(col.getLabel(), Object::toString);
         }
 
-        //noinspection unchecked
         Node<String, String> playSportTree = Tree.fromTable(
                 playSportTable,
-                playSportTable.getNumCols() - 1,  // FIXME index out of bounds exception
-                Collections.singleton("No"),
+                "play",
+                Collections.singleton("yes"),
                 Tree.Algorithm.ID3,
                 Object::toString,
-                toAnswerByCol);
+                toAnswerFuncs,
+                "no");
 
         System.out.println("\nTesting Tree.fromTable()...");
-        System.out.println(playSportTable.toDiagram());
+        System.out.println(playSportTree.toDiagram());
     }
 
     public enum CoinFlip {HEADS, TAILS}
