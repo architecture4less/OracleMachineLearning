@@ -12,8 +12,8 @@
 
 package me.jwotoole9141.oracleml.s4l4.driver;
 
-import me.jwotoole9141.oracleml.s4l4.NodeInner;
 import me.jwotoole9141.oracleml.s4l4.Node;
+import me.jwotoole9141.oracleml.s4l4.NodeInner;
 import me.jwotoole9141.oracleml.s4l4.NodeOuter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
