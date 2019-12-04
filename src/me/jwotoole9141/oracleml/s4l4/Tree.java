@@ -150,6 +150,7 @@ public class Tree {
 
                 System.out.println(attrCol);
 
+                outcomesLoop:
                 for (Object value : attrCol.getValues()) {  // FIXME null pointer
 
                     /* gets a sub-table with only the rows containing 'value' */
@@ -178,7 +179,6 @@ public class Tree {
                         // BASE CASE
 
                         node.getChildren().put(answer, new NodeOuter<>(finalAnswer));
-                        return;
                     }
                     else {
 
@@ -196,7 +196,7 @@ public class Tree {
                                 // BASE CASE
 
                                 node.getChildren().put(answer, new NodeOuter<>(finalAnswer));
-                                return;
+                                continue outcomesLoop;
                             }
                         }
 
@@ -211,7 +211,6 @@ public class Tree {
 
                         branch(child, subTable, resultsKey, successVals,
                                 toQuestionFunc, toAnswerFuncs, defaultAnswer);
-                        return;
                     }
                 }
             }
