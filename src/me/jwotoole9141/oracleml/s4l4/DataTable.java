@@ -507,6 +507,7 @@ public class DataTable {
 
         StringBuilder diagram = new StringBuilder();
 
+        diagram.append(String.format("%n"));
         diagram.append(StringUtils.center(title, tableWidth, ' ')).append(String.format("%n"));
         diagram.append(headerDivider.toString());
         diagram.append(String.format(rowFormat, headerElems.toArray()));
