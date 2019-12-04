@@ -14,6 +14,7 @@ package me.jwotoole9141.oracleml.s4l4;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,18 +31,21 @@ public class Tree {
      *
      * @param table          a table of data
      * @param resultColIndex the column index of the table's <i>final answers</i>
+     * @param successVals    the values that should count as a success
      * @param algorithm      the algorithm to build the tree with
      * @param toQuestion     a function that takes the title of the table or the label
      *                       of one of its columns and returns an object of type {@link Q}
      * @param toAnswerByCol  an array of functions, one per column in the table, that each
      *                       take data from the table and return an object of type {@link A}
      * @param <Q>            the <i>question</i> type of the tree
+     * @param <T>            the type of data held by the result column
      * @param <A>            the <i>answer</i> type of the tree
      * @return a tree model that categorizes the given data
      */
-    public static <Q, A> @NotNull Node<Q, A> fromTable(
+    public static <Q, A, T> @NotNull Node<Q, A> fromTable(
             @NotNull DataTable table,
             int resultColIndex,
+            Set<T> successVals,
             @NotNull Algorithm algorithm,
             @NotNull Function<String, Q> toQuestion,
             @NotNull Function<Object, A>[] toAnswerByCol)
@@ -49,14 +53,17 @@ public class Tree {
 
         NodeInner<Q, A> tree = new NodeInner<>(toQuestion.apply(table.getTitle()));
         DataTable.Column results = table.getColumns().get(resultColIndex);
-//        algorithm.branch(tree, table.toSubTable(col -> col != results), results, toQuestion, toAnswerByCol);
-        return tree;  // FIXME
+
+        algorithm.branch(tree, table.toSubTable(
+                col -> col != results), resultColIndex,
+                successVals, toQuestion, toAnswerByCol);
+        return tree;
     }
 
     /**
      * An enumeration of tree building algorithms that can
-     * be used with {@link #fromTable(DataTable, int, Algorithm,
-     * Function, Function[]) Tree.fromTable()}.
+     * be used with {@link #fromTable(DataTable, int, Set,
+     * Algorithm, Function, Function[])} Tree.fromTable()}.
      */
     public enum Algorithm {
 
@@ -65,30 +72,83 @@ public class Tree {
          */
         ID3 {
             @Override
-            public <Q, A> void branch(
-                    @NotNull Node<Q, A> node,
+            public <Q, A, T> void branch(
+                    @NotNull NodeInner<Q, A> node,
                     @NotNull DataTable table,
                     int resultColIndex,
+                    Set<T> successVals,
                     @NotNull Function<String, Q> toQuestion,
                     @NotNull Function<Object, A>[] toAnswerByCol)
                     throws IllegalArgumentException {
 
-                // TODO
+                // TODO 1. testing 2. refactoring
 
-//                if (table.getNumCells() == 0) {
-//                    return;
-//                }
-//
-//                @SuppressWarnings("unchecked")
-//                Map<Object, Double> valueDistr = results.getDistribution();
-//
-//                for (Object value : valueDistr.keySet()) {
-//                    double distr = valueDistr.get(value);
-//                    if (distr == 0 || distr == 1) {
-//
-//                        // node.result = px
-//                    }
-//                }
+                if (table.getNumCells() == 0) {
+
+                    // FIXME should also check for a table
+                    //   with only the result column
+
+                    throw new IllegalArgumentException("Empty table given...");
+                }
+
+                //noinspection unchecked
+                DataTable.Column<T> resultCol = table.getColumns().get(resultColIndex);
+
+                double systemEntropy = entropy(resultCol, successVals);
+                Map<DataTable.Column<Object>, Double> gains = new HashMap<>();
+
+                //noinspection unchecked
+                for (DataTable.Column<Object> column : table.getColumns()) {
+                    if (column == resultCol) {
+                        continue;
+                    }
+                    gains.put(column, gain(systemEntropy, column, resultCol, successVals));
+                }
+                double highestGain = 0;
+                DataTable.Column<Object> bestAttr = null;
+
+                for (DataTable.Column<Object> attr : gains.keySet()) {
+                    double entropyGain = gains.get(attr);
+                    if (entropyGain > highestGain) {
+                        highestGain = entropyGain;
+                        bestAttr = attr;
+                    }
+                }
+                assert bestAttr != null;
+
+                DataTable.Column<Object> attrCol = bestAttr;
+                int attrColIndex = table.getColumns().indexOf(attrCol);
+                DataTable slicedTable = table.toSubTable(col -> col != attrCol);
+
+                for (Object value : attrCol.getValues()) {
+
+                    DataTable subTable = slicedTable.toSubTable(attrCol, e -> e.equals(value));
+
+                    NodeOuter<Q, A> leafChild = null;
+
+                    if ((subTable.getColumns().size() - 1) == 0) {
+                        leafChild = new NodeOuter<>(toAnswerByCol[attrColIndex].apply(null));  // FIXME apply(null) okay??
+                    }
+                    else {
+                        //noinspection unchecked
+                        resultCol = subTable.getColumns().get(resultColIndex);
+                        Map<T, Integer> resultSuccessCounts = resultCol.getCounts(successVals);
+                        for (T successVal : resultSuccessCounts.keySet()) {
+
+                            int count = resultSuccessCounts.get(successVal);
+                            if (count == 0 || count == resultCol.getRows().size()) {
+                                leafChild = new NodeOuter<>(toAnswerByCol[attrColIndex].apply(successVal));
+                                break;
+                            }
+                        }
+                    }
+
+                    if (leafChild == null) {
+
+                        NodeInner<Q, A> childNode = new NodeInner<>(toQuestion.apply(attrCol.getLabel()));
+                        branch(childNode, subTable, resultColIndex, successVals, toQuestion, toAnswerByCol);
+                    }
+                }
             }
         };
 
@@ -99,17 +159,20 @@ public class Tree {
          * @param node           the node to branch
          * @param table          the table to branch with
          * @param resultColIndex the column index of the table's <i>final answers</i>
+         * @param successVals    the values that should count as a success
          * @param toQuestion     a function that takes the label of columns in
          *                       the table and returns an object of type {@link Q}
          * @param toAnswerByCol  an array of functions, one per column in the table, that each
          *                       take data from the table and return an object of type {@link A}
          * @param <Q>            the <i>question</i> type of the given node
+         * @param <T>            the type of data held by the result column
          * @param <A>            the <i>answer</i> type of the given node
          */
-        public abstract <Q, A> void branch(
-                @NotNull Node<Q, A> node,
+        public abstract <Q, A, T> void branch(
+                @NotNull NodeInner<Q, A> node,
                 @NotNull DataTable table,
                 int resultColIndex,
+                Set<T> successVals,
                 @NotNull Function<String, Q> toQuestion,
                 @NotNull Function<Object, A>[] toAnswerByCol)
                 throws IllegalArgumentException;
