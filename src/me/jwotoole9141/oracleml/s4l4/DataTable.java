@@ -15,6 +15,7 @@ package me.jwotoole9141.oracleml.s4l4;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -220,17 +221,19 @@ public class DataTable {
 
             // add the header...
 
-            StringBuilder diagram = new StringBuilder(
-                    String.format(rowFormat, "n", label));
-
-            // add a divider...
-
             int totalWidth = 2 + rowNumCellWidth + colDivider.length() + maxCellWidth + 2;
 
+            StringBuilder headerDivider = new StringBuilder();
             for (int i = 0; i < totalWidth; i++) {
-                diagram.append("-");
+                headerDivider.append("-");
             }
-            diagram.append(String.format("%n"));
+            headerDivider.append(String.format("%n"));
+
+            StringBuilder diagram = new StringBuilder();
+
+            diagram.append(headerDivider.toString());
+            diagram.append(String.format(rowFormat, "n", label));
+            diagram.append(headerDivider.toString());
 
             // add each row of data...
 
@@ -463,23 +466,26 @@ public class DataTable {
 
         // add the header...
 
+        int tableWidth = 2 + rowNumCellWidth + ((cellFormats.size() - 1) * colDivider.length())
+                + maxCellWidths.stream().mapToInt(Integer::valueOf).sum() + 2;
+
+        StringBuilder headerDivider = new StringBuilder();
+        for (int i = 0; i < tableWidth; i++) {
+            headerDivider.append("-");
+        }
+        headerDivider.append(String.format("%n"));
+
         List<String> headerElems = cols.stream()
                 .map(Column::getLabel)
                 .collect(Collectors.toList());
         headerElems.add(0, "n");
 
-        StringBuilder diagram = new StringBuilder(String.format(
-                rowFormat, headerElems.toArray()));
+        StringBuilder diagram = new StringBuilder();
 
-        // add a divider...
-
-        int tableWidth = 2 + rowNumCellWidth + ((cellFormats.size() - 1) * colDivider.length())
-                + maxCellWidths.stream().mapToInt(Integer::valueOf).sum() + 2;
-
-        for (int i = 0; i < tableWidth; i++) {
-            diagram.append("-");
-        }
-        diagram.append(String.format("%n"));
+        diagram.append(StringUtils.center(title, tableWidth, ' ')).append(String.format("%n"));
+        diagram.append(headerDivider.toString());
+        diagram.append(String.format(rowFormat, headerElems.toArray()));
+        diagram.append(headerDivider.toString());
 
         // add each row of data...
 
