@@ -18,7 +18,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - [X] [Week 3](#week-3)
 - [X] [Week 4, 5, 6](#week-4-5-6)
 - [X] [Week 7](#week-7)
-- [ ] [Week 8, 9, 10](#week-8-9-10)
+- [X] [Week 8, 9, 10](#week-8-9-10)
 - [ ] [Week 11](#week-11)
 ---
 
