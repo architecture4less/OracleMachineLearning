@@ -96,10 +96,7 @@ public class Tree {
                 // calculate system entropy using the results column...
 
                 //noinspection unchecked
-                DataTable.Column<T> resultsCol = (DataTable.Column<T>) table.getColumns().stream()
-                        .filter(col -> col.getLabel().equals(resultsKey))
-                        .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format(
-                                "The given table does not contain a column labeled '%s'", resultsKey)));
+                DataTable.Column<T> resultsCol = (DataTable.Column<T>) table.getColumn(resultsKey);
 
                 double systemEntropy = entropy(resultsCol, successVals);
 
@@ -123,7 +120,7 @@ public class Tree {
                 final DataTable.Column<?> attrCol;
                 int attrColIndex;
                 {
-                    double highestGain = 0;
+                    double highestGain = Double.NEGATIVE_INFINITY;
                     DataTable.Column<?> bestAttr = null;
 
                     for (DataTable.Column<?> attr : gains.keySet()) {
@@ -149,7 +146,6 @@ public class Tree {
 
                 System.out.println("best attr: " + attrCol);
 
-                outcomesLoop:
                 for (Object value : attrCol.getValues()) {
 
                     /* gets a sub-table with only the rows containing 'value' */
@@ -157,12 +153,8 @@ public class Tree {
 
                     System.out.println("sub table: " + subTable);
 
-                    // TODO duplicated code
                     //noinspection unchecked
-                    DataTable.Column<T> subResultsCol = (DataTable.Column<T>) table.getColumns().stream()
-                            .filter(col -> col.getLabel().equals(resultsKey))
-                            .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format(
-                                    "The given table does not contain a column labeled '%s'", resultsKey)));
+                    DataTable.Column<T> subResultsCol = (DataTable.Column<T>) table.getColumn(resultsKey);
 
                     Set<T> resultValues = resultsCol.getValues();
                     A outcome = toAnswerFuncs.get(attrCol.getLabel()).apply(value);
