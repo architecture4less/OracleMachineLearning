@@ -419,13 +419,10 @@ public class DataTable {
     public <T> @NotNull DataTable toSubTable(
             @NotNull Column<T> filterColumn, @NotNull Predicate<T> rowFilter) {
 
-        if (cols.contains(filterColumn)) {
-            List<Integer> indices = filterColumn.toSubColumnIndices(rowFilter);
-            return new DataTable(title, cols.stream()
-                    .map(c -> c.toSubColumn(indices))
-                    .collect(Collectors.toList()));
-        }
-        return this;
+        List<Integer> indices = filterColumn.toSubColumnIndices(rowFilter);
+        return new DataTable(title, cols.stream()
+                .map(c -> c.toSubColumn(indices))
+                .collect(Collectors.toList()));
     }
 
     /**
