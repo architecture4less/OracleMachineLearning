@@ -221,8 +221,9 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - Section 4 – Entropy and the ID3 Algorithm
 
   - 4-4 Create an ID3 Tree
-    - [ ] Understand non binary tree structure
-    - [ ] Create a non-binary tree structure
+    - [X] Understand non binary tree structure
+    - [X] Create a non-binary tree structure
+      > [ID3 Algorithm Implementation](src/me/jwotoole9141/oracleml/s4l4) 
 
 ## Week 11
 > **Sunday, Dec 1st, 2019**  
