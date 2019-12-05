@@ -278,6 +278,7 @@ public class DataTable {
 
     private final @NotNull List<@NotNull Column<?>> cols = new ArrayList<>();
     private final @NotNull List<@NotNull Column<?>> colsView = Collections.unmodifiableList(cols);
+    private final @NotNull Map<@NotNull String, @NotNull Column<?>> header = new HashMap<>();
 
     /**
      * Creates an empty data table with the given title.
@@ -318,6 +319,7 @@ public class DataTable {
                 if (col.rows.size() != numRows) {
                     throw new IllegalArgumentException("Row sizes are unequal.");
                 }
+                header.put(col.getLabel(), col);
             }
         }
     }
@@ -339,6 +341,22 @@ public class DataTable {
      */
     public @NotNull List<Column<?>> getColumns() {
         return colsView;
+    }
+
+    /**
+     * Gets the column in this table with the given label.
+     *
+     * @param label the label of the column to fetch
+     * @return a column in this table
+     *
+     * @throws IllegalArgumentException if no column in this table has the given label
+     */
+    public @NotNull Column<?> getColumn(String label) {
+        if (header.containsKey(label)) {
+            return header.get(label);
+        }
+        throw new IllegalArgumentException(String.format(
+                "No column with label '%s'", label));
     }
 
     /**
