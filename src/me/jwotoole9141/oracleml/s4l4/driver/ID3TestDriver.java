@@ -108,6 +108,27 @@ public class ID3TestDriver {
         System.out.println("Play sport?");
         System.out.println(playSportTree.toDiagram());
 
+        // testing branching the loan approval table...
+
+        System.out.println("\nTesting Tree.fromTable()...");
+        DataTable loansTable = DataTable.fromCsvFile(new File("res/loan_approval.csv"));
+        Map<String, Function<Object, String>> toAnswerFuncsLoan = new HashMap<>();
+        for (DataTable.Column col : loansTable.getColumns()) {
+            toAnswerFuncsLoan.put(col.getLabel(), Objects::toString);
+        }
+        Node<String, String> loansTree = Tree.fromTable(
+                loansTable,
+                "Approved",
+                Collections.singleton("Yes"),
+                Tree.Algorithm.ID3,
+                o -> o + "?",
+                toAnswerFuncsLoan,
+                "No");
+
+        System.out.println(loansTable.toDiagram());
+        System.out.println("Loan approved?");
+        System.out.println(loansTree.toDiagram());
+
         // testing the id3 algorithm on another csv file...
 
         System.out.println("\nTesting Tree.fromTable()...");
@@ -149,6 +170,7 @@ public class ID3TestDriver {
         System.out.println("Which planet?");
         System.out.println(planetsTree.toDiagram());
     }
+
 
     public enum CoinFlip {HEADS, TAILS}
 }

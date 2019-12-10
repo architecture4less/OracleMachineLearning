@@ -1,0 +1,8 @@
+Age,Has Job,Owns House,Credit Rating,Approved
+Young,No,No,Fair,No
+Young,No,No,Good,No
+Young,Yes,No,Good,Yes
+Middle,No,No,Good,No
+Middle,Yes,Yes,Excellent,Yes
+Old,Yes,No,Good,Yes
+Old,No,No,Fair,No
