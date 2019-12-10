@@ -93,7 +93,6 @@ public class ID3TestDriver {
                 toAnswerFuncs,
                 "no");
 
-        System.out.println("\nTesting Tree.fromTable()...");
         System.out.println(playSportTree.toDiagram());
     }
 
