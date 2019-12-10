@@ -125,15 +125,15 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [X] Understand a binary tree
       > A binary tree is a data structure in which each node has a maximum of two children: the left and right node. Trees can be used for decision-making algorithms. Binary trees can also be used for efficient search algorithms.  
     - [X] Create a Node class
-      > [* Node.java](src/me/jwotoole9141/oracleml/s3l1/Node.java)
+      > [Node.java](src/me/jwotoole9141/oracleml/s3l1/Node.java)
     
   - 3-2 Recursion
     - [X] Define recursion
       > Recursion is an approach to problem solving by having a function call itself. 
     - [X] Understand recursive methods
       > A recursive algorithm must have a way to stop recursing and finally produce a result. This is achieved by defining separate BASE and RECURSION cases. The base case returns a result _without_ making another recursive call.  
-        [* Recursion.java](src/me/jwotoole9141/oracleml/s3l2/Recursion.java)  
-        [* Output of Recursion.main()](media/output_s3l2_recursion.png)
+        [Recursion.java](src/me/jwotoole9141/oracleml/s3l2/Recursion.java)  
+        [Output of Recursion.main()](media/output_s3l2_recursion.png)
     - [X] State the advantages and disadvantages of recursion
       > A recursive algorithm can make code simpler and more readable. However, a recursive solution requires significantly more memory than an iterative solution. Recursive functions carry the risk of a stack overflow if the recursion gets too deep.
     
@@ -147,15 +147,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [X] Define in-order traversal
       > In in-order traversal, the node's left child is traversed (if it exists), then the node's data is gathered, and then the node's right child is traversed (if it exists).
     - [X] Create methods for BTree
-      > **Task 1**  
-        [* BNode.java](src/me/jwotoole9141/oracleml/s3l3t1/BNode.java)  
-        [* NodeDriver.java](src/me/jwotoole9141/oracleml/s3l3t1/NodeDriver.java)  
-        [* Output of NodeDriver.main()](media/output_s3l3t1_node_driver.png)  
-        **Task 2**  
-        [* BNode.java](src/me/jwotoole9141/oracleml/s3l3t2/BNode.java)  
-        [* BTree.java](src/me/jwotoole9141/oracleml/s3l3t2/BTree.java)  
-        [* TreeDriver.java](src/me/jwotoole9141/oracleml/s3l3t2/TreeDriver.java)    
-        [* Output of TreeDriver.main()](media/output_s3l3t2_tree_driver.png)  
+      > [Task 1](src/me/jwotoole9141/oracleml/s3l3t1)  
+        [Output of Task 1](media/output_s3l3t1_node_driver.png)  
+        [Task 2](src/me/jwotoole9141/oracleml/s3l3t2)  
+        [Output of Task 2](media/output_s3l3t2_tree_driver.png)  
 
 
 ## Week 4, 5, 6
@@ -169,7 +164,8 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [X] Describe the use of decision trees
       > Decision trees are useful for building a branching network of sequential questions and answers. A few examples are a technical troubleshooting guide or a medical diagnosis.
     - [X] Create a yes/no game
-      > [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)
+      > [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)  
+        [Demo of GuessingGame](media/guessing_game_demo.gif)
     - [X] State the problems of creating a manual decision tree
       > The main problem with creating a manual decision tree is that an answer might take a large number of questions to reach. But, if the tree were to be re-ordered with a good decision tree algorithm, it may take significantly fewer questions. Manually determining the most significant question to ask first for a sample of data is difficult.
 
@@ -211,7 +207,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
         ``` entropy(S) - sum((len(O)/len(S)) * entropy(O) for O in A) ```  
         with the system `S`, attribute `A`, and outcome of an attribute `O`. 
     - [X] Manually work through the ID3 algorithm
-      > [ID3 Algorithm Manually Worked Through](media/id3_algorithm_worked.pdf)
+      > [ID3 Algorithm Manually Worked Through PDF](media/id3_algorithm_worked.pdf)
 
 ## Week 8, 9, 10
 > **Sunday, Nov 10th, 2019**  
@@ -223,7 +219,10 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   - 4-4 Create an ID3 Tree
     - [X] Understand non binary tree structure
     - [X] Create a non-binary tree structure
-      > [ID3 Algorithm Implementation](src/me/jwotoole9141/oracleml/s4l4) 
+      > [ID3 Algorithm Implementation](src/me/jwotoole9141/oracleml/s4l4)  
+        [Output of Table Tests](media/output_s4l4_table_driver.png)  
+        [Output of Tree Tests](media/output_s4l4_tree_driver.png)  
+        [Output of ID3 Tests](media/output_s4l4_id3_driver.png)  
 
 ## Week 11
 > **Sunday, Dec 1st, 2019**  
