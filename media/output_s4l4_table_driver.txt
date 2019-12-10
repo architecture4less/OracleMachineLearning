@@ -1,0 +1,123 @@
+"C:\Program Files\Java\jdk1.8.0_221\bin\java.exe" ...
+
+Testing empty diagram...
+
+nill 
+-----
+| n |
+-----
+
+
+Testing toString()...
+DataTable[size=70, cols={Column[label=outlook, rows=14, values={rain, overcast, sunny}], Column[label=temperature, rows=14, values={mild, cold, hot}], Column[label=humidity, rows=14, values={normal, high}], Column[label=wind, rows=14, values={strong, weak}], Column[label=play, rows=14, values={no, yes}]}]
+
+Testing toDiagram()...
+
+                      play_sport.csv                      
+----------------------------------------------------------
+| n  | outlook  | temperature | humidity | wind   | play |
+----------------------------------------------------------
+| 0  | sunny    | hot         | high     | weak   | no   |
+| 1  | sunny    | hot         | high     | strong | no   |
+| 2  | overcast | hot         | high     | weak   | yes  |
+| 3  | rain     | mild        | high     | weak   | yes  |
+| 4  | rain     | cold        | normal   | weak   | yes  |
+| 5  | rain     | cold        | normal   | strong | no   |
+| 6  | overcast | cold        | normal   | strong | yes  |
+| 7  | sunny    | mild        | high     | weak   | no   |
+| 8  | sunny    | cold        | normal   | weak   | yes  |
+| 9  | rain     | mild        | normal   | weak   | yes  |
+| 10 | sunny    | mild        | normal   | strong | yes  |
+| 11 | overcast | mild        | high     | strong | yes  |
+| 12 | overcast | hot         | normal   | weak   | yes  |
+| 13 | rain     | mild        | high     | strong | no   |
+
+
+Testing creating a table...
+
+                res/planets.csv                 
+------------------------------------------------
+| n | planet  | hockey | sculpting | trivia    |
+------------------------------------------------
+| 0 | MERCURY | POOR   | NONE      | HIGH      |
+| 1 | VENUS   | MEDIUM | MEDIUM    | NONE      |
+| 2 | EARTH   | HIGH   | POOR      | EXCELLENT |
+| 3 | MARS    | MEDIUM | POOR      | NONE      |
+| 4 | JUPITER | HIGH   | HIGH      | POOR      |
+| 5 | SATURN  | HIGH   | MEDIUM    | MEDIUM    |
+| 6 | URANUS  | MEDIUM | NONE      | EXCELLENT |
+| 7 | NEPTUNE | POOR   | EXCELLENT | NONE      |
+
+
+Testing col.toDiagram()
+---------------
+| n | planet  |
+---------------
+| 0 | MERCURY |
+| 1 | VENUS   |
+| 2 | EARTH   |
+| 3 | MARS    |
+| 4 | JUPITER |
+| 5 | SATURN  |
+| 6 | URANUS  |
+| 7 | NEPTUNE |
+
+
+Testing saving to file and reloading... 
+
+                  planets.csv                   
+------------------------------------------------
+| n | planet  | hockey | sculpting | trivia    |
+------------------------------------------------
+| 0 | MERCURY | POOR   | NONE      | HIGH      |
+| 1 | VENUS   | MEDIUM | MEDIUM    | NONE      |
+| 2 | EARTH   | HIGH   | POOR      | EXCELLENT |
+| 3 | MARS    | MEDIUM | POOR      | NONE      |
+| 4 | JUPITER | HIGH   | HIGH      | POOR      |
+| 5 | SATURN  | HIGH   | MEDIUM    | MEDIUM    |
+| 6 | URANUS  | MEDIUM | NONE      | EXCELLENT |
+| 7 | NEPTUNE | POOR   | EXCELLENT | NONE      |
+
+
+Testing toSubTable(columnFilter)...
+
+            res/planets.csv            
+---------------------------------------
+| n | planet  | sculpting | trivia    |
+---------------------------------------
+| 0 | MERCURY | NONE      | HIGH      |
+| 1 | VENUS   | MEDIUM    | NONE      |
+| 2 | EARTH   | POOR      | EXCELLENT |
+| 3 | MARS    | POOR      | NONE      |
+| 4 | JUPITER | HIGH      | POOR      |
+| 5 | SATURN  | MEDIUM    | MEDIUM    |
+| 6 | URANUS  | NONE      | EXCELLENT |
+| 7 | NEPTUNE | EXCELLENT | NONE      |
+
+
+Testing toSubTable(filterColumn, rowFilter)...
+
+               res/planets.csv               
+---------------------------------------------
+| n | planet  | hockey | sculpting | trivia |
+---------------------------------------------
+| 0 | VENUS   | MEDIUM | MEDIUM    | NONE   |
+| 1 | MARS    | MEDIUM | POOR      | NONE   |
+| 2 | NEPTUNE | POOR   | EXCELLENT | NONE   |
+
+
+Testing toSubTable(colIndices, rowIndices)...
+
+          res/planets.csv           
+------------------------------------
+| n | planet  | hockey | sculpting |
+------------------------------------
+| 0 | MERCURY | POOR   | NONE      |
+| 1 | VENUS   | MEDIUM | MEDIUM    |
+| 2 | EARTH   | HIGH   | POOR      |
+| 3 | MARS    | MEDIUM | POOR      |
+| 4 | URANUS  | MEDIUM | NONE      |
+| 5 | NEPTUNE | POOR   | EXCELLENT |
+
+
+Process finished with exit code 0

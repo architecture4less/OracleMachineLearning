@@ -19,7 +19,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
 - [X] [Week 4, 5, 6](#week-4-5-6)
 - [X] [Week 7](#week-7)
 - [X] [Week 8, 9, 10](#week-8-9-10)
-- [ ] [Week 11](#week-11)
+- [X] [Week 11](#week-11)
 ---
 
 ## Week 0
@@ -96,22 +96,25 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   Question|Points Available|Points Awarded
   ---|---|--- 
   [**Section 1**]()|**11**|**10**
-  [The Turing test is]()|1|1
-  [Data exhaust allows systems t...]()|1|1
-  [Which of the following are ex...]()|1|1
-  [Information can be as simple ...]()|1|1
-  [The date and time of a credit...]()|1|1
-  [Information is data in contex...]()|1|1
-  [Rainfall recorded as 2,3,0,3,...]()|1|1
-  [Regression of data is when]()|1|1
-  [You watch a baseball game wit...]()|1|0
-  [Data that can be shown in tab...]()|1|1
-  [Data shown as a regression ca...]()|1|1
+  [1. The Turing test is]()|1|1
+  [2. Data exhaust allows systems t...]()|1|1
+  [3. Which of the following are ex...]()|1|1
+  [4. Information can be as simple ...]()|1|1
+  [5. The date and time of a credit...]()|1|1
+  [6. Information is data in contex...]()|1|1
+  [7. Rainfall recorded as 2,3,0,3,...]()|1|1
+  [8. Regression of data is when]()|1|1
+  [9. You watch a baseball game wit...]()|1|0
+  [10. Data that can be shown in tab...]()|1|1
+  [11. Data shown as a regression ca...]()|1|1
   [**Section 2**]()|**4**|**4**
-  [As personal computers and dev...]()|1|1
-  [Using a methodology such as C...]()|1|1
-  [Which one of the following is...]()|1|1
-  [In the CRISP model, how would...]()|1|1
+  [12. As personal computers and dev...]()|1|1
+  [13. Using a methodology such as C...]()|1|1
+  [14. Which one of the following is...]()|1|1
+  [15. In the CRISP model, how would...]()|1|1
+
+  - **Question 9. You watch a baseball game without every having seen or read about it and you wish to classify the players based on certain criteria - team, pitcher, fielder etc. This is an example of unsupervised learning. True (\*)**
+      > So, the difference between supervised and unsupervised learning is entirely in the independent data. The dependent data is still labeled in unsupervised learning. In this example, the dependent data are the players and the labels are 'team, pitcher, fielder, etc.'. Any other data has _not_ been labeled.  
 
 
 ## Week 3
@@ -165,7 +168,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
       > Decision trees are useful for building a branching network of sequential questions and answers. A few examples are a technical troubleshooting guide or a medical diagnosis.
     - [X] Create a yes/no game
       > [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)  
-        [Demo of GuessingGame](media/guessing_game_demo.gif)
+        [Demo of GuessingGame](media/demo_guessing_game.gif)  
     - [X] State the problems of creating a manual decision tree
       > The main problem with creating a manual decision tree is that an answer might take a large number of questions to reach. But, if the tree were to be re-ordered with a good decision tree algorithm, it may take significantly fewer questions. Manually determining the most significant question to ask first for a sample of data is difficult.
 
@@ -207,7 +210,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
         ``` entropy(S) - sum((len(O)/len(S)) * entropy(O) for O in A) ```  
         with the system `S`, attribute `A`, and outcome of an attribute `O`. 
     - [X] Manually work through the ID3 algorithm
-      > [ID3 Algorithm Manually Worked Through PDF](media/id3_algorithm_worked.pdf)
+      > [ID3 Algorithm Manually Worked Through PDF](media/id3_algorithm_worked.pdf)  
 
 ## Week 8, 9, 10
 > **Sunday, Nov 10th, 2019**  
@@ -220,12 +223,48 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
     - [X] Understand non binary tree structure
     - [X] Create a non-binary tree structure
       > [ID3 Algorithm Implementation](src/me/jwotoole9141/oracleml/s4l4)  
-        [Output of Table Tests](media/output_s4l4_table_driver.png)  
-        [Output of Tree Tests](media/output_s4l4_tree_driver.png)  
-        [Output of ID3 Tests](media/output_s4l4_id3_driver.png)  
+        [Output of Table Tests](media/output_s4l4_table_driver.txt)  
+        [Output of Tree Tests](media/output_s4l4_tree_driver.txt)  
+        [Output of ID3 Tests](media/output_s4l4_id3_driver.txt)  
 
 ## Week 11
 > **Sunday, Dec 1st, 2019**  
 
-- [ ] Complete Section 3 & 4 Quiz
+- [X] Complete Section 3 & 4 Quiz
+  
+  ```
+  Score: 12 out of 15
+  Percentage Scored: 80%
+  Mastery Score: 70%
+  ```
+  Question|Points Available|Points Awarded
+  ---|---|--- 
+  [**Section 3**]()|**9**|**7**
+  [1. In the following tree, what w...]()|1|1
+  [2. Tree traversal is]()|1|1
+  [3. In the following tree what wo...]()|1|1
+  [4. In a binary tree what is the ...]()|1|1
+  [5. Trees are very useful for rep...]()|1|1
+  [6. In a decision tree, it doesn'...]()|1|0
+  [7. Which method uses more memory...]()|1|1
+  [8. Recurive methods can always b...]()|1|0
+  [9. A method making a call to its...]()|1|1
+  [**Section 4**]()|**6**|**5**
+  [10. ID3 is short for]()|1|1
+  [11. Decision trees work better if...]()|1|1
+  [12. If you know the outcome of an...]()|1|0
+  [13. Variance is]()|1|1
+  [14. Non binary tree classes still...]()|1|1
+  [15. The difference between a tree...]()|1|1
+
+  - **6. In a decision tree, it doesn't matter which questions you start with. False (\*)**
+      > I think it does matter. This is the purpose of _Secion 4_, in learning about entropy and decision tree algorithms. Of course, you will get to the answer no matter the order of questions, but the order of questions can make a _significant_ difference in performance.
+  
+  - **8. Recursive methods can always be written as iterative methods. True (\*)**
+      > Cool explanation on [Stack Overflow](https://stackoverflow.com/questions/931762/can-every-recursion-be-converted-into-iteration)
+  
+  - **12. If you know the outcome of an event 100% of the time how much entropy is contained within it? 1 (\*)**  
+      > I absolutely disagree. My answer, 0, was correct. See Section 4, Lesson 2, Slide 10.
+
 - [ ] Complete AiML Final Exam
+    > Will take the exam in-class

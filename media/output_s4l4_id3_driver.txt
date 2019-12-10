@@ -1,0 +1,85 @@
+"C:\Program Files\Java\jdk1.8.0_221\bin\java.exe" ...
+
+    Study Hours vs Coin Toss vs Test Grade    
+----------------------------------------------
+| n | hours studied | coin flip | test grade |
+----------------------------------------------
+| 0 | 0             | HEADS     | C          |
+| 1 | 0             | TAILS     | B          |
+| 2 | 0             | TAILS     | F          |
+| 3 | 0             | TAILS     | D          |
+
+Testing Tree.Aglorithm.entropy()...
+The entropy of 'hours studied' is: 0.000000
+The entropy of 'coin flip' is: 0.811278
+The entropy of 'test grade' is: 1.000000
+
+Testing Tree.Algorithm.gain()...
+The gain of 'hours studied' on 'test grade' is: 0.000000
+The gain of 'coin flip' on 'test grade' is: 0.311278
+
+Testing Tree.fromTable()...
+Play sport?
+\--> outlook?
+   \--> [rain] wind?
+   |  \--> [strong] no
+   |  \--> [weak] yes
+   \--> [overcast] yes
+   \--> [sunny] humidity?
+      \--> [normal] yes
+      \--> [high] no
+
+
+Testing Tree.fromTable()...
+
+                       loan_approval.csv                        
+----------------------------------------------------------------
+| n | Age    | Has Job | Owns House | Credit Rating | Approved |
+----------------------------------------------------------------
+| 0 | Young  | No      | No         | Fair          | No       |
+| 1 | Young  | No      | No         | Good          | No       |
+| 2 | Young  | Yes     | No         | Good          | Yes      |
+| 3 | Middle | No      | No         | Good          | No       |
+| 4 | Middle | Yes     | Yes        | Excellent     | Yes      |
+| 5 | Old    | Yes     | No         | Good          | Yes      |
+| 6 | Old    | No      | No         | Fair          | No       |
+
+Loan approved?
+\--> Has Job?
+   \--> [No] No
+   \--> [Yes] Yes
+
+
+Testing Tree.fromTable()...
+Okay trivia skill?
+\--> hockey?
+   \--> [HIGH] sculpting?
+   |  \--> [HIGH] POOR
+   |  \--> [MEDIUM] MEDIUM
+   |  \--> [POOR] EXCELLENT
+   \--> [MEDIUM] planet?
+   |  \--> [VENUS] NONE
+   |  \--> [MARS] NONE
+   |  \--> [URANUS] EXCELLENT
+   \--> [POOR] sculpting?
+      \--> [NONE] HIGH
+      \--> [EXCELLENT] NONE
+
+
+Testing Tree.fromTable()...
+Which planet?
+\--> trivia?
+   \--> [HIGH] MERCURY
+   \--> [MEDIUM] SATURN
+   \--> [POOR] JUPITER
+   \--> [NONE] hockey?
+   |  \--> [MEDIUM] sculpting?
+   |  |  \--> [MEDIUM] VENUS
+   |  |  \--> [POOR] MARS
+   |  \--> [POOR] NEPTUNE
+   \--> [EXCELLENT] hockey?
+      \--> [HIGH] EARTH
+      \--> [MEDIUM] URANUS
+
+
+Process finished with exit code 0
