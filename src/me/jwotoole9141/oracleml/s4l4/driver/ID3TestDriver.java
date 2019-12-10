@@ -16,6 +16,8 @@ import com.opencsv.exceptions.CsvValidationException;
 import me.jwotoole9141.oracleml.s4l4.DataTable;
 import me.jwotoole9141.oracleml.s4l4.Node;
 import me.jwotoole9141.oracleml.s4l4.Tree;
+import me.jwotoole9141.oracleml.s4l4.driver.TableTestDriver.Planet;
+import me.jwotoole9141.oracleml.s4l4.driver.TableTestDriver.SkillLevel;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,11 +91,53 @@ public class ID3TestDriver {
                 "play",
                 Collections.singleton("yes"),
                 Tree.Algorithm.ID3,
-                Object::toString,
+                o -> o + "?",
                 toAnswerFuncs,
                 "no");
 
+        System.out.println("Play sport?");
         System.out.println(playSportTree.toDiagram());
+
+        // testing the id3 algorithm on another csv file...
+
+        System.out.println("\nTesting Tree.fromTable()...");
+
+        DataTable planetsTable = DataTable.fromCsvFile(new File("res/planets.csv"));
+
+        Map<String, Function<Object, String>> toAnswerFuncsPlanet = new HashMap<>();
+        for (DataTable.Column col : planetsTable.getColumns()) {
+            toAnswerFuncsPlanet.put(col.getLabel(), Object::toString);
+        }
+
+        Node<String, String> planetsTree = Tree.fromTable(
+                planetsTable,
+                "trivia",
+                new HashSet<>(Arrays.asList(SkillLevel.MEDIUM, SkillLevel.HIGH, SkillLevel.EXCELLENT)),
+                Tree.Algorithm.ID3,
+                o -> o + "?",
+                toAnswerFuncsPlanet,
+                SkillLevel.NONE.name()
+        );
+
+        System.out.println("Okay trivia skill?");
+        System.out.println(planetsTree.toDiagram());
+
+        // testing a different way to branch the planets table...
+
+        System.out.println("\nTesting Tree.fromTable()...");
+
+        planetsTree = Tree.fromTable(
+                planetsTable,
+                "planet",
+                Collections.singleton(Planet.JUPITER),
+                Tree.Algorithm.ID3,
+                o -> o + "?",
+                toAnswerFuncsPlanet,
+                "Unknown planet"
+        );
+
+        System.out.println("Which planet?");
+        System.out.println(planetsTree.toDiagram());
     }
 
     public enum CoinFlip {HEADS, TAILS}
