@@ -162,10 +162,15 @@ public class Tree {
 
                     // if there is no entropy left, end the tree with the unanimous result...
 
+                    System.out.println("resultValues.size(): " + resultValues.toString());
+
                     if (resultValues.size() == 1) {  // BASE CASE
 
-                        A finalResult = toAnswerFunc.apply(resultValues.stream().findAny());
+                        A finalResult = toAnswerFunc.apply(resultValues.stream().findAny().get());
                         node.getChildren().put(outcome, new NodeOuter<>(finalResult));
+
+                        // TODO how to fix-- also pass parent node into branch()
+                        //  instead of adding children to 'node' add childern to 'parent node'
                     }
 
                     // if there are no other columns left, end the tree with the most commun result..
