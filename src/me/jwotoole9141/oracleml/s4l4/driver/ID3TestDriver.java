@@ -26,8 +26,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * Tests the {@link Tree} and {@link Tree.Algorithm} classes.
+ *
+ * @author Jared O'Toole
+ */
 public class ID3TestDriver {
 
+    /**
+     * Runs the test driver.
+     *
+     * @param args unused command-line args
+     */
     public static void main(String[] args) throws IOException, CsvValidationException {
 
         // create sample data...
