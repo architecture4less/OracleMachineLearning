@@ -82,7 +82,7 @@ public abstract class Node<Q, A> {
      * @return a visual, multi-line string
      */
     public @NotNull String toDiagram() {
-        return toDiagram("", "    ");
+        return toDiagram("", "   ");
     }
 
     /**

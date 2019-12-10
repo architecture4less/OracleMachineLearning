@@ -96,8 +96,8 @@ public class NodeOuter<Q, A> extends Node<Q, A> {
 
     @Override
     protected @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch) {
-        return prefix + "\\--> "
-                + (getParentAnswer() == null ? " " : "[" + getParentAnswer().toString() + "] ")
+        return prefix + "\\-->"
+                + (getParentAnswer() == null ? " " : " [" + getParentAnswer().toString() + "] ")
                 + getAnswer().toString() + "\n";
     }
 }

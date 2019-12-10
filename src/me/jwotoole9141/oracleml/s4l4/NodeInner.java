@@ -146,15 +146,15 @@ public class NodeInner<Q, A> extends Node<Q, A> {
     @Override
     protected @NotNull String toDiagram(@NotNull String prefix, @NotNull String branch) {
 
-        StringBuilder result = new StringBuilder(prefix + "\\--> "
-                + (getParentAnswer() == null ? " " : "[" + getParentAnswer().toString() + "] ")
+        StringBuilder result = new StringBuilder(prefix + "\\-->"
+                + (getParentAnswer() == null ? " " : " [" + getParentAnswer().toString() + "] ")
                 + getQuestion().toString() + "\n");
 
         int i = children.size();
         String newPrefix = prefix + branch;
 
         for (Node<Q, A> child : children.values()) {
-            result.append(child.toDiagram(newPrefix, --i > 0 ? "|    " : "    "));
+            result.append(child.toDiagram(newPrefix, --i > 0 ? "|  " : "   "));
         }
         return result.toString();
     }
