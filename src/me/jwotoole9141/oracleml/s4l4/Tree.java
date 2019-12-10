@@ -52,7 +52,7 @@ public class Tree {
      * @throws IllegalArgumentException if {@code table} does not contain a column labled {@code resultsKey}
      * @throws ClassCastException       if data held by the column labeled {@code resultsKey} isn't {@link T}
      */
-    public static <Q, A, T> @Nullable Node<Q, A> fromTable(
+    public static <Q, A, T> @NotNull Node<Q, A> fromTable(
             @NotNull DataTable table,
             String resultsKey,
             Set<T> successVals,
@@ -76,37 +76,59 @@ public class Tree {
          */
         ID3 {
             @Override
-            public <Q, A, T> Node<Q, A> branch(
+            public <Q, A, T> @NotNull Node<Q, A> branch(
                     @NotNull DataTable table,
                     @NotNull String resultsKey,
-                    Set<T> successVals,
+                    @NotNull Set<T> successVals,
                     @NotNull Function<String, Q> toQuestionFunc,
                     @NotNull Map<String, Function<Object, A>> toAnswerFuncs,
                     @NotNull A defaultAnswer)
                     throws IllegalArgumentException, ClassCastException {
 
-                // TODO fix logic according to new pseudo code
+                // if the table is empty, end the tree with the default answer...
 
-                if (table.getNumCols() == 1 /* just results col */ || table.getNumRows() == 0) {
-                    return null;
+                if (table.getNumRows() == 0) {
+                    return new NodeOuter<>(defaultAnswer);
+                    // BASE CASE
                 }
-
-                System.out.println("\n\nBRANCHING\n");
-
-                // calculate system entropy using the results column...
 
                 //noinspection unchecked
                 DataTable.Column<T> resultsCol = (DataTable.Column<T>) table.getColumn(resultsKey);
+                Function<Object, A> toAnswerFunc = toAnswerFuncs.get(resultsCol.getLabel());
+
+                // if there are no other columns left, end the tree with the most commun result..
+
+                if (table.getNumCols() == 1 /* just results col */) {
+
+                    T mostCommonResult = resultsCol.getCounts().entrySet().stream()
+                            .max(Comparator.comparingInt(Map.Entry::getValue))
+                            .map(Map.Entry::getKey).orElse(null);
+
+                    A finalAnswer = mostCommonResult == null
+                            ? defaultAnswer
+                            : toAnswerFunc.apply(mostCommonResult);
+
+                    return new NodeOuter<>(finalAnswer);
+                    // BASE CASE
+                }
+
+                // if there is no entropy left, end the tree with the unanimous result...
+
+                Set<T> resultValues = resultsCol.getValues();
+                if (resultValues.size() == 1) {
+
+                    A finalAnswer = toAnswerFunc.apply(resultValues.stream().findAny().get());
+                    return new NodeOuter<>(finalAnswer);
+                    // BASE CASE
+                }
+
+                // calculate system entropy using the results column...
 
                 double systemEntropy = entropy(resultsCol, successVals);
 
-                System.out.println(table);
-                System.out.println("system entropy: " + systemEntropy);  // DEBUG
-
-                Map<DataTable.Column<?>, Double> gains = new HashMap<>();
-
                 // calculate the gains of every other column...
 
+                Map<DataTable.Column<?>, Double> gains = new HashMap<>();
                 for (DataTable.Column<?> column : table.getColumns()) {
                     if (column != resultsCol) {
                         gains.put(column, gain(
@@ -125,9 +147,6 @@ public class Tree {
 
                     for (DataTable.Column<?> attr : gains.keySet()) {
                         double entropyGain = gains.get(attr);
-
-                        System.out.println("  gain: " + entropyGain);  // DEBUG
-
                         if (entropyGain > highestGain) {
                             highestGain = entropyGain;
                             bestAttr = attr;
@@ -137,67 +156,25 @@ public class Tree {
                     attrCol = bestAttr;
                 }
 
-                // for each unique value under the chosen column...
+                // for each unique value (outcome) under the chosen column...
 
                 NodeInner<Q, A> node = new NodeInner<>(toQuestionFunc.apply(attrCol.getLabel()));
 
                 /* gets a sub-table without the attr column-- we dont need it when branching further */
                 DataTable slicedTable = table.toSubTable(col -> col != attrCol);
 
-                System.out.println("best attr: " + attrCol);
-
                 for (Object value : attrCol.getValues()) {
 
                     /* gets a sub-table with only the rows containing 'value' */
                     DataTable subTable = slicedTable.toSubTable(attrCol, e -> e.equals(value));
 
-                    System.out.println("sub table: " + subTable);
+                    // branch on the sub-table of data...
 
-                    //noinspection unchecked
-                    DataTable.Column<T> subResultsCol = (DataTable.Column<T>) table.getColumn(resultsKey);
-
-                    Set<T> resultValues = resultsCol.getValues();
                     A outcome = toAnswerFuncs.get(attrCol.getLabel()).apply(value);
-                    Function<Object, A> toAnswerFunc = toAnswerFuncs.get(subResultsCol.getLabel());
 
-                    // if there is no entropy left, end the tree with the unanimous result...
-
-                    System.out.println("resultValues.size(): " + resultValues.toString());
-
-                    if (resultValues.size() == 1) {  // BASE CASE
-
-                        A finalResult = toAnswerFunc.apply(resultValues.stream().findAny().get());
-                        node.getChildren().put(outcome, new NodeOuter<>(finalResult));
-
-                        // TODO how to fix-- also pass parent node into branch()
-                        //  instead of adding children to 'node' add childern to 'parent node'
-                    }
-
-                    // if there are no other columns left, end the tree with the most commun result..
-
-                    else if (subTable.getColumns().size() == 1 /* just results col */) {  // BASE CASE
-
-                        T mostCommonResult = subResultsCol.getCounts().entrySet().stream()
-                                .max(Comparator.comparingInt(Map.Entry::getValue))
-                                .map(Map.Entry::getKey).orElse(null);
-
-                        A finalAnswer = mostCommonResult == null
-                                ? defaultAnswer
-                                : toAnswerFunc.apply(mostCommonResult);
-
-                        node.getChildren().put(outcome, new NodeOuter<>(finalAnswer));
-                    }
-
-                    // else, branch on this sub table...
-
-                    else {  // RECURSIVE CASE
-
-                        Node<Q, A> child = branch(subTable, resultsKey, successVals,
-                                toQuestionFunc, toAnswerFuncs, defaultAnswer);
-                        if (child != null) {
-                            node.getChildren().put(outcome, child);
-                        }
-                    }
+                    node.getChildren().put(outcome,
+                            branch(subTable, resultsKey, successVals,
+                                    toQuestionFunc, toAnswerFuncs, defaultAnswer));
                 }
                 return node;
             }
@@ -222,10 +199,10 @@ public class Tree {
          * @throws IllegalArgumentException if {@code table} does not contain a column labled {@code resultsKey}
          * @throws ClassCastException       if data held by the column labeled {@code resultsKey} isn't {@link T}
          */
-        public abstract <Q, A, T> Node<Q, A> branch(
+        public abstract <Q, A, T> @NotNull Node<Q, A> branch(
                 @NotNull DataTable table,
                 @NotNull String resultsKey,
-                Set<T> successVals,
+                @NotNull Set<T> successVals,
                 @NotNull Function<String, Q> toQuestionFunc,
                 @NotNull Map<String, Function<Object, A>> toAnswerFuncs,
                 @NotNull A defaultAnswer)
