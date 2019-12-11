@@ -264,7 +264,7 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
       > Cool explanation on [Stack Overflow](https://stackoverflow.com/questions/931762/can-every-recursion-be-converted-into-iteration)
   
   - **12. If you know the outcome of an event 100% of the time how much entropy is contained within it? 1 (\*)**  
-      > There must be an error in the question. My answer, 0, was definitely correct. See Section 4, Lesson 2, Slide 10.
+      > There must be an error in this question. My answer, 0, was definitely correct. See Section 4, Lesson 2, Slide 10.
 
 - [ ] Complete AiML Final Exam
     > Will take the exam in-class
