@@ -266,5 +266,16 @@ This is my personal project submission for professor Vanselow's _COP3003: Object
   - **12. If you know the outcome of an event 100% of the time how much entropy is contained within it? 1 (\*)**  
       > There must be an error in this question. My answer, 0, was definitely correct. See Section 4, Lesson 2, Slide 10.
 
-- [ ] Complete AiML Final Exam
-    > Will take the exam in-class
+- [X] Complete AiML Final Exam
+  - Take 1:
+  ```
+  Score: 44 out of 50
+  Percentage Scored: 88 %
+  Mastery Score: 60 %
+  ```
+  - Take 2:
+  ```
+  Score: 50 out of 50
+  Percentage Scored: 100 %
+  Mastery Score: 60 %
+  ```
