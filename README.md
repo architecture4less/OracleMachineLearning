@@ -11,6 +11,15 @@
 
 This is my personal project submission for professor Vanselow's _COP3003: Object Oriented Programming_ class at Florida Gulf Coast University for the 2019 fall semester. I will be completing the [Artificial Intelligence with Machine Learning in Java](https://academy.oracle.com/en/solutions-curriculum-full.html#machinelearn) Oracle iLearning course.
 
+Here are some highlights from this course, a demo of the _Guessing Game_ project, and a chronological table of contents.
+
+- [GuessingGame](src/me/jwotoole9141/oracleml/s3l4)
+- [ID3 Algorithm Manually Worked Through PDF](media/id3_algorithm_worked.pdf) 
+- [ID3 Algorithm Implementation](src/me/jwotoole9141/oracleml/s4l4)
+- [Output of ID3 Tests](media/output_s4l4_id3_driver.txt)  
+
+![Demo of GuessingGame](media/demo_guessing_game.gif)
+
 ---
 - [X] [Week 0](#week-0)
 - [X] [Week 1](#week-1)
